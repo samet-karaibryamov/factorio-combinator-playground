@@ -18,7 +18,7 @@ export const Canvas = ({ state, onZoom }: CanvasProps) => {
     x,
     y,
     zoom,
-  } = state.game
+  } = state.view
   const scaledGridSize = GRID_SQUARE_SIZE * zoom
   const minX = clampNumberTo(x, scaledGridSize)
   const countX = Math.trunc((VIEWBOX.w - minX) / scaledGridSize) + 1
@@ -44,7 +44,7 @@ export const Canvas = ({ state, onZoom }: CanvasProps) => {
     }
   }, [svgRef.current, mouseWheelHandler])
   return (
-    <div style={{ border: '1px solid red', display: 'inline-block' }}>
+    <div style={{ border: '1px solid red', display: 'inline-flex' }}>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${VIEWBOX.w} ${VIEWBOX.h}`}
