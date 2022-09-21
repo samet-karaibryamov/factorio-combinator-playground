@@ -2,8 +2,17 @@ import { INITIAL_STATE } from './App'
 
 export {}
 
+type _GameState = typeof INITIAL_STATE & {
+  game: {
+    objects: {
+      x: number
+      y: number
+      rotation: 0 | 1 | 2 | 3
+    }[]
+  }
+}
 declare global {
-  type GameState = typeof INITIAL_STATE
+  type GameState = Omit<_GameState, never>
   type MoveAction = {
     type: 'move'
     dx: number
