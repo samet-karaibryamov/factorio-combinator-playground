@@ -60,6 +60,28 @@ const useGameLoop = () => {
             },
           }
         }
+        if (action.type === 'keyup') {
+          const { game } = state
+          const { focusedObject: fo } = game
+          if (fo) {
+            if (action.key === 'r') {
+              return {
+                ...state,
+                game: {
+                  ...game,
+                  objects: game.objects.map(obj => {
+                    if (fo !== obj.id) return obj
+
+                    return {
+                      ...obj,
+                      rotation: (obj.rotation + 1) % 4 as ObjectRotation,
+                    }
+                  })
+                }
+              }
+            }
+          }
+        }
         break;
       case 'step':
         const newGameState = { ...state.view }
