@@ -36,21 +36,22 @@ declare global {
   }
   type GameState = {
     view: {
-      x: number,
-      y: number,
-      zoom: number,
-      isGridShown: boolean,
-    },
+      x: number
+      y: number
+      zoom: number
+      isGridShown: boolean
+    }
     game: {
-      objects: GameObjectType[],
+      objects: GameObjectType[]
       focusedObject?: string | null
-    },
+    }
     keyboard: {
-      up: boolean,
-      down: boolean,
-      left: boolean,
-      right: boolean,
-    },
+      up: boolean
+      down: boolean
+      left: boolean
+      right: boolean
+      shift: boolean
+    }
   }
 
   interface ZoomSpecs {

@@ -29,6 +29,7 @@ export const INITIAL_STATE: GameState = {
     down: false,
     left: false,
     right: false,
+    shift: false,
   },
 }
 
@@ -49,14 +50,15 @@ const useGameLoop = () => {
   const [state, dispatch] = useReducer((state: GameState, action: GameActions) => {
     switch (action.type) {
       case 'keyup':
-      case 'keydown':
-        const dir = KEY_MAP[action.key as keyof typeof KEY_MAP]
-        if (dir) {
+      case 'keydown': {
+        const key = action.key.toLowerCase()
+        const mapped = KEY_MAP[key as keyof typeof KEY_MAP] || key
+        if (mapped in state.keyboard) {
           return {
             ...state,
             keyboard: {
               ...state.keyboard,
-              [dir]: action.type === 'keydown',
+              [mapped]: action.type === 'keydown',
             },
           }
         }
@@ -64,7 +66,7 @@ const useGameLoop = () => {
           const { game } = state
           const { focusedObject: fo } = game
           if (fo) {
-            if (action.key === 'r') {
+            if (key === 'r') {
               return {
                 ...state,
                 game: {
@@ -74,7 +76,7 @@ const useGameLoop = () => {
 
                     return {
                       ...obj,
-                      rotation: (obj.rotation + 1) % 4 as ObjectRotation,
+                      rotation: (obj.rotation + (state.keyboard.shift ? -1 : 1) + 4) % 4 as ObjectRotation,
                     }
                   })
                 }
@@ -83,6 +85,7 @@ const useGameLoop = () => {
           }
         }
         break;
+      }
       case 'step':
         const newGameState = { ...state.view }
         const pan = PAN_PIXELS_PS * action.dt / 500
