@@ -8,7 +8,7 @@ const MAX_ZOOM = 2
 const MIN_ZOOM = 0.2
 const PAN_PIXELS_PS = 80
 
-export const INITIAL_STATE = {
+export const INITIAL_STATE: GameState = {
   view: {
     x: 0,
     y: 0,
@@ -22,6 +22,7 @@ export const INITIAL_STATE = {
       ObjectFactory.CC(40, 80, 2),
       ObjectFactory.CC(80, 80, 3),
     ],
+    focusedObject: null
   },
   keyboard: {
     up: false,
@@ -66,19 +67,19 @@ const useGameLoop = () => {
 
         ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {
           if (state.keyboard[dir]) {
-            newGameState.x += DIR_MAP[dir].dx * pan// / state.game.zoom
-            newGameState.y += DIR_MAP[dir].dy * pan// / state.game.zoom
+            newGameState.x += DIR_MAP[dir].dx * pan
+            newGameState.y += DIR_MAP[dir].dy * pan
           }
         })
         const newState = { ...state, view: newGameState }
         return newState
       case 'zoom': {
         const { dz, svgX, svgY } = action
-        const { view: game } = state
+        const { view } = state
         const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, state.view.zoom + dz))
 
-        const x = svgX - (svgX - game.x) * zoom / game.zoom
-        const y = svgY - (svgY - game.y) * zoom / game.zoom
+        const x = svgX - (svgX - view.x) * zoom / view.zoom
+        const y = svgY - (svgY - view.y) * zoom / view.zoom
 
         return {
           ...state,
@@ -100,7 +101,13 @@ const useGameLoop = () => {
         }
       }
       case 'hoverObject': {
-        
+        return {
+          ...state,
+          game: {
+            ...state.game,
+            focusedObject: action.objId,
+          }
+        }
       }
       default:
         break;
@@ -112,6 +119,7 @@ const useGameLoop = () => {
   const keyDownHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keydown', key: ev.key }) }, [])
   const keyUpHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keyup', key: ev.key }) }, [])
   const onZoom = useCallback((zSpecs: ZoomSpecs) => { dispatch({ type: 'zoom', ...zSpecs }) }, [])
+
   useEffect(() => {
     document.addEventListener('keydown', keyDownHandler)
     document.addEventListener('keyup', keyUpHandler)
@@ -154,12 +162,13 @@ function App() {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200 }}>
       <div style={{ flexGrow: 0 }}>
-        <Canvas state={state} onZoom={onZoom} />
+        <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
       </div>
       <div>
         <h1>hi</h1>
         <h1>Hello x: {state.view.x}; y: {state.view.y}</h1>
-        <div>{JSON.stringify(state.keyboard)}</div>
+        <div>{JSON.stringify(state.view)}</div>
+        <div>Focused: {state.game.focusedObject}</div>
         <ShowGridToggle dispatch={dispatch} state={state} />
       </div>
     </div>

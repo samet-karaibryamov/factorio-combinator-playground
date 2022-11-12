@@ -1,9 +1,36 @@
-import { Fragment, useCallback, useEffect, useRef } from "react"
+import React, { Fragment, useCallback, useEffect, useRef } from "react"
 import _ from 'lodash'
 import constantCombinatorImg from 'assets/combinator/hr-constant-combinator.png'
 
 const clampNumberTo = (n: number, clamp: number) => {
   return (n % clamp + clamp) % clamp
+}
+
+const getSvgCoords = (ev: React.MouseEvent | MouseEvent, svg: SVGSVGElement) => {
+  const bcr = svg.getBoundingClientRect()
+  return {
+    x: ev.clientX - bcr.x,
+    y: ev.clientY - bcr.y,
+  }
+}
+const svgCoordsToGameCoords = (
+  svgCoords: { x: number, y: number },
+  { view }: GameState,
+) => {
+  return {
+    x: (svgCoords.x - view.x) / view.zoom,
+    y: (svgCoords.y - view.y) / view.zoom,
+  }
+}
+
+const gameCoordsToSvgCoords = (
+  gameCoords: { x: number, y: number },
+  { view }: GameState,
+) => {
+  return {
+    x: view.x + gameCoords.x * view.zoom,
+    y: view.y + gameCoords.y * view.zoom,
+  }
 }
 
 const VIEWBOX = { w: 600, h: 600 }
@@ -12,6 +39,7 @@ const GRID_SQUARE_SIZE = 40
 interface CanvasProps {
   state: GameState
   onZoom: (specs: ZoomSpecs) => void
+  dispatch: React.Dispatch<GameActions>
 }
 
 interface GameObjectProps {
@@ -42,7 +70,7 @@ const GameObject = ({ x, y, zoom, gridSize, gameObject }: GameObjectProps) => {
   )
 }
 
-export const Canvas = ({ state, onZoom }: CanvasProps) => {
+export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
   const {
     x,
     y,
@@ -58,12 +86,9 @@ export const Canvas = ({ state, onZoom }: CanvasProps) => {
 
   const mouseWheelHandler = useCallback((ev: WheelEvent) => {
     ev.preventDefault()
-    console.log(ev.deltaY, ev.deltaMode)
     if (svgRef.current) {
-      const bcr = svgRef.current.getBoundingClientRect()
-      const xx = ev.clientX - bcr.x
-      const yy = ev.clientY - bcr.y
-      onZoom({ dz: Math.sign(ev.deltaY) * 0.1, svgX: xx, svgY: yy })
+      const { x, y } = getSvgCoords(ev, ev.currentTarget as SVGSVGElement)
+      onZoom({ dz: Math.sign(ev.deltaY) * 0.1, svgX: x, svgY: y })
     }
   }, [onZoom])
 
@@ -80,13 +105,20 @@ export const Canvas = ({ state, onZoom }: CanvasProps) => {
         ref={svgRef}
         viewBox={`0 0 ${VIEWBOX.w} ${VIEWBOX.h}`}
         style={{ width: VIEWBOX.w, height: VIEWBOX.h }}
+        onMouseMove={(ev) => {
+          const svgCoords = getSvgCoords(ev, ev.currentTarget)
+          const { x, y } = svgCoordsToGameCoords(svgCoords, state)
+          const obj = state.game.objects.find(obj => (
+            obj.x <= x && x <= obj.x + GRID_SQUARE_SIZE &&
+            obj.y <= y && y <= obj.y + GRID_SQUARE_SIZE
+          ))
+          if (obj?.id !== state.game.focusedObject) {
+            dispatch({ type: 'hoverObject', objId: obj?.id })
+          }
+        }}
+        onClick={ev => console.log(getSvgCoords(ev, ev.currentTarget))}
       >
         <circle cx={x} cy={y} r={5 * zoom} fill="red" />
-        <rect x={10} y={10} width={10} height={10} fill="green" style={{ backgroundImage: `url(${constantCombinatorImg})` }} />
-        {/* <svg x={100} y={50} viewBox="0 0 114 102" width={114} height={102} onClick={console.log}>
-          <image href={constantCombinatorImg} />
-          <rect stroke="red" strokeWidth={5} width="100%" height="100%"></rect>
-        </svg> */}
         {state.game.objects.map((obj, i) =>
           <GameObject
             key={i}
@@ -120,6 +152,23 @@ export const Canvas = ({ state, onZoom }: CanvasProps) => {
               )
             })}
           </g>
+        }
+        {state.game.objects
+          .filter(obj => obj.id === state.game.focusedObject)
+          .map(obj => {
+            const SQ_EXPAND = 10
+            const len = (GRID_SQUARE_SIZE + SQ_EXPAND) * zoom / 3
+            const anchor = gameCoordsToSvgCoords(obj, state)
+            const d= [
+              `M ${anchor.x - SQ_EXPAND / 2},${anchor.y - SQ_EXPAND / 2 + len}`,
+              `v ${-len}`, `h ${len}`, `m ${len},0`,
+              `h ${len}`, `v ${len}`, `m 0,${len}`,
+              `v ${len}`, `h ${-len}`, `m ${-len},0`,
+              `h ${-len}`, `v ${-len}`,
+            ].join(' ')
+
+            return <path d={d} stroke="gold" strokeWidth={3} fill="none" />
+          })
         }
       </svg>
     </div>
