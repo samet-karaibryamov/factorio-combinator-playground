@@ -19,15 +19,10 @@ type PartialPartial<T, Keys extends keyof T> = Omit<
 & { [P in keyof T]?: T[P] }
 , never>
 
-type _GameState = DeepMerge<typeof INITIAL_STATE, {
-  game: {
-    objects: GameObjectType[]
-  }
-}>
 declare global {
   type ObjectRotation = 0 | 1 | 2 | 3
   type GameObjectType = {
-    id: number | string
+    id: string
     x: number
     y: number
     rotation: ObjectRotation
@@ -39,12 +34,35 @@ declare global {
       }
     }
   }
-  type GameState = Omit<_GameState, never>
+  type GameState = {
+    view: {
+      x: number,
+      y: number,
+      zoom: number,
+      isGridShown: boolean,
+    },
+    game: {
+      objects: GameObjectType[],
+      focusedObject?: string | null
+    },
+    keyboard: {
+      up: boolean,
+      down: boolean,
+      left: boolean,
+      right: boolean,
+    },
+  }
 
   interface ZoomSpecs {
     dz: number
     svgX: number
     svgY: number
+  }
+
+  interface HoverSpecs {
+    svgX: number
+    svgY: number
+
   }
 
   type GameActions = Actions[keyof Actions]
@@ -77,6 +95,6 @@ interface Actions {
   }
   HoverObject: {
     type: 'hoverObject'
-    objId: string
+    objId?: string
   }
 }
