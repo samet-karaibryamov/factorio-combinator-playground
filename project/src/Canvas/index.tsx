@@ -1,6 +1,7 @@
 import React, { Fragment, useCallback, useEffect, useRef } from "react"
 import _ from 'lodash'
 import constantCombinatorImg from 'assets/combinator/hr-constant-combinator.png'
+import { objectSortCb } from "utils/objectSortCb"
 
 const clampNumberTo = (n: number, clamp: number) => {
   return (n % clamp + clamp) % clamp
@@ -119,7 +120,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         onClick={ev => console.log(getSvgCoords(ev, ev.currentTarget))}
       >
         <circle cx={x} cy={y} r={5 * zoom} fill="red" />
-        {state.game.objects.map((obj, i) =>
+        {state.game.objects.sort(objectSortCb).map((obj, i) =>
           <GameObject
             key={i}
             x={x}
@@ -167,7 +168,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
               `h ${-len}`, `v ${-len}`,
             ].join(' ')
 
-            return <path d={d} stroke="gold" strokeWidth={3} fill="none" />
+            return <path key="focus" d={d} stroke="gold" strokeWidth={3} fill="none" />
           })
         }
       </svg>
