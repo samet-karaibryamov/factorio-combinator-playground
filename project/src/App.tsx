@@ -1,6 +1,8 @@
+import { ObjectFactory } from 'Canvas/objectsSprites'
 import { useCallback, useEffect, useReducer } from 'react'
 import './App.css'
 import { Canvas } from './Canvas'
+import { ShowGridToggle } from './components/ShowGridToggle'
 
 const MAX_ZOOM = 2
 const MIN_ZOOM = 0.2
@@ -11,9 +13,15 @@ export const INITIAL_STATE = {
     x: 0,
     y: 0,
     zoom: 1,
+    isGridShown: true,
   },
   game: {
-    objects: [],
+    objects: [
+      ObjectFactory.CC(80, 120, 0),
+      ObjectFactory.CC(40, 40, 1),
+      ObjectFactory.CC(40, 80, 2),
+      ObjectFactory.CC(80, 80, 3),
+    ],
   },
   keyboard: {
     up: false,
@@ -54,7 +62,7 @@ const useGameLoop = () => {
         break;
       case 'step':
         const newGameState = { ...state.view }
-        const pan = PAN_PIXELS_PS * action.dt / 1000
+        const pan = PAN_PIXELS_PS * action.dt / 500
 
         ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {
           if (state.keyboard[dir]) {
@@ -81,6 +89,18 @@ const useGameLoop = () => {
             zoom,
           }
         }
+      }
+      case 'showGrid': {
+        return {
+          ...state,
+          view: {
+            ...state.view,
+            isGridShown: action.isShown
+          }
+        }
+      }
+      case 'hoverObject': {
+        
       }
       default:
         break;
@@ -118,13 +138,17 @@ const useGameLoop = () => {
   return {
     state,
     onZoom,
+    dispatch,
   }
 }
+
+export type UseGameLoop = typeof useGameLoop
 
 function App() {
   const {
     state,
     onZoom,
+    dispatch,
   } = useGameLoop()
 
   return (
@@ -136,6 +160,7 @@ function App() {
         <h1>hi</h1>
         <h1>Hello x: {state.view.x}; y: {state.view.y}</h1>
         <div>{JSON.stringify(state.keyboard)}</div>
+        <ShowGridToggle dispatch={dispatch} state={state} />
       </div>
     </div>
   )
