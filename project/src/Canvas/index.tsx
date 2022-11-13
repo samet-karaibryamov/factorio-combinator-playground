@@ -119,31 +119,31 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         }}
         onClick={ev => console.log(getSvgCoords(ev, ev.currentTarget))}
       >
+        <g>
+          <rect x="0" y="0" width="100%" height="100%" fill="#313031"></rect>
+          {_.times(countX + 1, (ix) => {
+            const xx = minX + (ix - 1) * scaledGridSize
+
+            return _.times(countY + 1, (iy) => {
+              const yy = minY + (iy - 1) * scaledGridSize
+              const ox = clampNumberTo(Math.round((xx - x) / scaledGridSize), 2)
+              const oy = clampNumberTo(Math.round((yy - y) / scaledGridSize), 2)
+              if (ox === oy) return null
+
+              return (
+                <rect
+                  key={`${ix}:${iy}`}
+                  x={xx}
+                  y={yy}
+                  width={scaledGridSize}
+                  height={scaledGridSize}
+                  fill="#1b1b1b"
+                />
+              )
+            })
+          })}
+        </g>
         {state.view.isGridShown && <>
-          <g>
-            <rect x="0" y="0" width="100%" height="100%" fill="#313031"></rect>
-            {_.times(countX + 1, (ix) => {
-              const xx = minX + (ix - 1) * scaledGridSize
-
-              return _.times(countY + 1, (iy) => {
-                const yy = minY + (iy - 1) * scaledGridSize
-                const ox = clampNumberTo(Math.round((xx - x) / scaledGridSize), 2)
-                const oy = clampNumberTo(Math.round((yy - y) / scaledGridSize), 2)
-                if (ox === oy) return null
-
-                return (
-                  <rect
-                    key={`${ix}:${iy}`}
-                    x={xx}
-                    y={yy}
-                    width={scaledGridSize}
-                    height={scaledGridSize}
-                    fill="#1b1b1b"
-                  />
-                )
-              })
-            })}
-          </g>
           <g style={{ stroke: 'black', strokeWidth: .5, fontSize: 10, fontWeight: 100 }}>
             {_.times(countX, (i) => {
               const xx = minX + i * scaledGridSize
@@ -181,8 +181,8 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         {state.game.objects
           .filter(obj => obj.id === state.game.focusedObject)
           .map(obj => {
-            const SQ_EXPAND = 10
-            const len = (GRID_SQUARE_SIZE + SQ_EXPAND) * zoom / 3
+            const SQ_EXPAND = 10 * zoom
+            const len = (scaledGridSize + SQ_EXPAND) / 3
             const anchor = gameCoordsToSvgCoords(obj, state)
             const d= [
               `M ${anchor.x - SQ_EXPAND / 2},${anchor.y - SQ_EXPAND / 2 + len}`,
@@ -192,7 +192,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
               `h ${-len}`, `v ${-len}`,
             ].join(' ')
 
-            return <path key="focus" d={d} stroke="gold" strokeWidth={3} fill="none" />
+            return <path key="focus" d={d} stroke="gold" strokeWidth={3 * zoom} fill="none" />
           })
         }
       </svg>

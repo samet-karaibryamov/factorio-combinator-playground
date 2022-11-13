@@ -5,7 +5,7 @@ import { Canvas } from './Canvas'
 import { ShowGridToggle } from './components/ShowGridToggle'
 
 const MAX_ZOOM = 2
-const MIN_ZOOM = 0.2
+const MIN_ZOOM = 0.5
 const PAN_PIXELS_PS = 80
 
 export const INITIAL_STATE: GameState = {
@@ -13,7 +13,7 @@ export const INITIAL_STATE: GameState = {
     x: 0,
     y: 0,
     zoom: 1,
-    isGridShown: true,
+    isGridShown: false,
   },
   game: {
     objects: [
