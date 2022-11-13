@@ -90,14 +90,17 @@ const useGameLoop = () => {
         const newGameState = { ...state.view }
         const pan = PAN_PIXELS_PS * action.dt / 500
 
+        let isUpdated = false
         ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {
           if (state.keyboard[dir]) {
+            isUpdated = true
             newGameState.x += DIR_MAP[dir].dx * pan
             newGameState.y += DIR_MAP[dir].dy * pan
           }
         })
-        const newState = { ...state, view: newGameState }
-        return newState
+        if (!isUpdated) return state
+
+        return { ...state, view: newGameState }
       case 'zoom': {
         const { dz, svgX, svgY } = action
         const { view } = state
