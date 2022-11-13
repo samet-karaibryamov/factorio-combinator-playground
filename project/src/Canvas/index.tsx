@@ -127,8 +127,8 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
 
               return _.times(countY + 1, (iy) => {
                 const yy = minY + (iy - 1) * scaledGridSize
-                const ox = Math.round((xx - x) / scaledGridSize) % 2
-                const oy = Math.round((yy - y) / scaledGridSize) % 2
+                const ox = clampNumberTo(Math.round((xx - x) / scaledGridSize), 2)
+                const oy = clampNumberTo(Math.round((yy - y) / scaledGridSize), 2)
                 if (ox === oy) return null
 
                 return (
