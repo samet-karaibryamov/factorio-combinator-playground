@@ -15,6 +15,7 @@ export const ObjectFactory = objectConstrainer({
     x,
     y,
     rotation: r,
+    type: 'cc',
     sprite: {
       href: constantCombinatorImg,
       unit: {

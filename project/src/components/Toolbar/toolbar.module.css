@@ -1,0 +1,23 @@
+
+.toolbar {
+  display: flex;
+  & > * {
+    margin: 0.5px;
+    background-color: #313131;
+    border-top: 1px solid #454545;
+    border-left: 1px solid #212121;
+    border-right: 1px solid #212121;
+    border-bottom: 1px solid #191919;
+
+    display: inline-flex;
+    position: relative;
+    padding: 3px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #4B4543;
+
+    &:hover, &.active {
+      background-color: #e39827;
+    }
+  }
+}

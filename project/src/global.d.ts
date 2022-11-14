@@ -26,6 +26,7 @@ declare global {
     x: number
     y: number
     rotation: ObjectRotation
+    type: ToolType
     sprite: {
       href: string
       unit: {
@@ -44,6 +45,7 @@ declare global {
     game: {
       objects: GameObjectType[]
       focusedObject?: string | null
+      tool: ToolType | null
     }
     keyboard: {
       up: boolean
@@ -53,6 +55,8 @@ declare global {
       shift: boolean
     }
   }
+
+  type ToolType = 'cc' | 'ac' | 'dc'
 
   interface ZoomSpecs {
     dz: number
@@ -97,5 +101,9 @@ interface Actions {
   HoverObject: {
     type: 'hoverObject'
     objId?: string
+  }
+  SelectTool: {
+    type: 'selectTool',
+    toolId: ToolType
   }
 }

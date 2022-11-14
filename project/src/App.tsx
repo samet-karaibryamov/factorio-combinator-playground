@@ -1,12 +1,10 @@
 import { ObjectFactory } from 'Canvas/objectsSprites'
+import { Toolbar } from 'components/Toolbar'
+import { gameReducer } from 'gameReducer'
 import { useCallback, useEffect, useReducer } from 'react'
 import './App.css'
 import { Canvas } from './Canvas'
 import { ShowGridToggle } from './components/ShowGridToggle'
-
-const MAX_ZOOM = 2
-const MIN_ZOOM = 0.5
-const PAN_PIXELS_PS = 80
 
 export const INITIAL_STATE: GameState = {
   view: {
@@ -22,7 +20,8 @@ export const INITIAL_STATE: GameState = {
       ObjectFactory.CC(40, 80, 2),
       ObjectFactory.CC(80, 80, 3),
     ],
-    focusedObject: null
+    focusedObject: null,
+    tool: null,
   },
   keyboard: {
     up: false,
@@ -33,116 +32,8 @@ export const INITIAL_STATE: GameState = {
   },
 }
 
-const KEY_MAP = {
-  w: 'up',
-  s: 'down',
-  a: 'left',
-  d: 'right',
-}
-const DIR_MAP = {
-  up: { dx: 0, dy: -1 },
-  down: { dx: 0, dy: 1 },
-  left: { dx: -1, dy: 0 },
-  right: { dx: 1, dy: 0 },
-}
-
 const useGameLoop = () => {
-  const [state, dispatch] = useReducer((state: GameState, action: GameActions) => {
-    switch (action.type) {
-      case 'keyup':
-      case 'keydown': {
-        const key = action.key.toLowerCase()
-        const mapped = KEY_MAP[key as keyof typeof KEY_MAP] || key
-        if (mapped in state.keyboard) {
-          return {
-            ...state,
-            keyboard: {
-              ...state.keyboard,
-              [mapped]: action.type === 'keydown',
-            },
-          }
-        }
-        if (action.type === 'keyup') {
-          const { game } = state
-          const { focusedObject: fo } = game
-          if (fo) {
-            if (key === 'r') {
-              return {
-                ...state,
-                game: {
-                  ...game,
-                  objects: game.objects.map(obj => {
-                    if (fo !== obj.id) return obj
-
-                    return {
-                      ...obj,
-                      rotation: (obj.rotation + (state.keyboard.shift ? -1 : 1) + 4) % 4 as ObjectRotation,
-                    }
-                  })
-                }
-              }
-            }
-          }
-        }
-        break;
-      }
-      case 'step':
-        const newGameState = { ...state.view }
-        const pan = PAN_PIXELS_PS * action.dt / 500
-
-        let isUpdated = false
-        ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {
-          if (state.keyboard[dir]) {
-            isUpdated = true
-            newGameState.x += DIR_MAP[dir].dx * pan
-            newGameState.y += DIR_MAP[dir].dy * pan
-          }
-        })
-        if (!isUpdated) return state
-
-        return { ...state, view: newGameState }
-      case 'zoom': {
-        const { dz, svgX, svgY } = action
-        const { view } = state
-        const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, state.view.zoom + dz))
-
-        const x = svgX - (svgX - view.x) * zoom / view.zoom
-        const y = svgY - (svgY - view.y) * zoom / view.zoom
-
-        return {
-          ...state,
-          view: {
-            ...state.view,
-            x,
-            y,
-            zoom,
-          }
-        }
-      }
-      case 'showGrid': {
-        return {
-          ...state,
-          view: {
-            ...state.view,
-            isGridShown: action.isShown
-          }
-        }
-      }
-      case 'hoverObject': {
-        return {
-          ...state,
-          game: {
-            ...state.game,
-            focusedObject: action.objId,
-          }
-        }
-      }
-      default:
-        break;
-    }
-
-    return state
-  }, INITIAL_STATE)
+  const [state, dispatch] = useReducer(gameReducer, INITIAL_STATE)
 
   const keyDownHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keydown', key: ev.key }) }, [])
   const keyUpHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keyup', key: ev.key }) }, [])
@@ -194,10 +85,10 @@ function App() {
       </div>
       <div>
         <h1>hi</h1>
-        <h1>Hello x: {state.view.x}; y: {state.view.y}</h1>
         <div>{JSON.stringify(state.view)}</div>
         <div>Focused: {state.game.focusedObject}</div>
         <ShowGridToggle dispatch={dispatch} state={state} />
+        <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
       </div>
     </div>
   )
