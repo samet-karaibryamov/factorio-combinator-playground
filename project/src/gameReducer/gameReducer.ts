@@ -1,15 +1,10 @@
 import immUpdate from 'immutability-helper'
+import { keyHandler } from './keyHandler'
 
 const MAX_ZOOM = 2
 const MIN_ZOOM = 0.5
 const PAN_PIXELS_PS = 80
 
-const KEY_MAP = {
-  w: 'up',
-  s: 'down',
-  a: 'left',
-  d: 'right',
-}
 const DIR_MAP = {
   up: { dx: 0, dy: -1 },
   down: { dx: 0, dy: 1 },
@@ -20,51 +15,7 @@ const DIR_MAP = {
 export const gameReducer = (state: GameState, action: GameActions) => {
   switch (action.type) {
     case 'keyup':
-    case 'keydown': {
-      const key = action.key.toLowerCase()
-      const mapped = KEY_MAP[key as keyof typeof KEY_MAP] || key
-      if (mapped in state.keyboard) {
-        return {
-          ...state,
-          keyboard: {
-            ...state.keyboard,
-            [mapped]: action.type === 'keydown',
-          },
-        }
-      }
-      if (action.type === 'keyup') {
-        const { game } = state
-        const { focusedObject: fo } = game
-        if (fo) {
-          if (key === 'r') {
-            return {
-              ...state,
-              game: {
-                ...game,
-                objects: game.objects.map(obj => {
-                  if (fo !== obj.id) return obj
-
-                  return {
-                    ...obj,
-                    rotation: (obj.rotation + (state.keyboard.shift ? -1 : 1) + 4) % 4 as ObjectRotation,
-                  }
-                })
-              }
-            }
-          }
-        }
-        switch (key) {
-          case 'q': {
-            const { tool, objects: objs } = state.game
-            if (tool || fo) {
-              const obj = objs.find(o => o.id === fo) as GameObjectType
-              return immUpdate(state, { game: { tool: { $set: tool ? null : obj.type } } })
-            }
-          }
-        }
-      }
-      break;
-    }
+    case 'keydown': return keyHandler(state, action)
     case 'step':
       const newGameState = { ...state.view }
       const pan = PAN_PIXELS_PS * action.dt / 500

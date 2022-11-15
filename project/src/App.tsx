@@ -1,6 +1,6 @@
 import { ObjectFactory } from 'Canvas/objectsSprites'
 import { Toolbar } from 'components/Toolbar'
-import { gameReducer } from 'gameReducer'
+import { gameReducer } from 'gameReducer/gameReducer'
 import { useCallback, useEffect, useReducer } from 'react'
 import './App.css'
 import { Canvas } from './Canvas'
@@ -86,6 +86,7 @@ function App() {
       <div>
         <h1>hi</h1>
         <div>{JSON.stringify(state.view)}</div>
+        <div>{JSON.stringify(state.keyboard)}</div>
         <div>Focused: {state.game.focusedObject}</div>
         <ShowGridToggle dispatch={dispatch} state={state} />
         <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>

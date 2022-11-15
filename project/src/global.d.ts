@@ -35,6 +35,15 @@ declare global {
       }
     }
   }
+
+  interface KeyboardType {
+    up: boolean
+    down: boolean
+    left: boolean
+    right: boolean
+    shift: boolean
+  }
+
   type GameState = {
     view: {
       x: number
@@ -47,13 +56,7 @@ declare global {
       focusedObject?: string | null
       tool: ToolType | null
     }
-    keyboard: {
-      up: boolean
-      down: boolean
-      left: boolean
-      right: boolean
-      shift: boolean
-    }
+    keyboard: KeyboardType
   }
 
   type ToolType = 'cc' | 'ac' | 'dc'
@@ -70,10 +73,10 @@ declare global {
 
   }
 
-  type GameActions = Actions[keyof Actions]
+  type GameActions = ActionsMapType[keyof ActionsMapType]
 }
 
-interface Actions {
+export interface ActionsMapType {
   Move: {
     type: 'move'
     dx: number

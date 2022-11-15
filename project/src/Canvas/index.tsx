@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useRef } from "react"
 import _ from 'lodash'
 import constantCombinatorImg from 'assets/combinator/hr-constant-combinator.png'
-import { objectSortCb } from "utils/objectSortCb"
 
 const clampNumberTo = (n: number, clamp: number) => {
   return (n % clamp + clamp) % clamp
@@ -35,7 +34,7 @@ const gameCoordsToSvgCoords = (
 }
 
 const VIEWBOX = { w: 600, h: 600 }
-const GRID_SQUARE_SIZE = 40
+export const GRID_SQUARE_SIZE = 40
 
 interface CanvasProps {
   state: GameState
@@ -168,7 +167,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
           </g>
         </>}
         <circle cx={x} cy={y} r={5 * zoom} fill="red" />
-        {state.game.objects.sort(objectSortCb).map((obj, i) =>
+        {_.sortBy(state.game.objects, (obj) => obj.y).map((obj, i) =>
           <GameObject
             key={i}
             x={x}
