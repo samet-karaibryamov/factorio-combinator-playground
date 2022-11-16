@@ -1,3 +1,4 @@
+import { tagObject } from 'Canvas/objectsSprites'
 import immUpdate from 'immutability-helper'
 import { keyHandler } from './keyHandler'
 
@@ -12,7 +13,7 @@ const DIR_MAP = {
   right: { dx: 1, dy: 0 },
 }
 
-export const gameReducer = (state: GameState, action: GameActions) => {
+export const _gameReducer = (state: GameState, action: GameActions) => {
   switch (action.type) {
     case 'keyup':
     case 'keydown': return keyHandler(state, action)
@@ -70,9 +71,17 @@ export const gameReducer = (state: GameState, action: GameActions) => {
     case 'selectTool': {
       return immUpdate(state, { game: { tool: { $set: action.toolId } } })
     }
+    case 'placeObject': {
+      return immUpdate(state, { game: { objects: { $push: [tagObject(action.instance)] } } })
+    }
     default:
       break;
   }
 
   return state
+}
+
+export const gameReducer: typeof _gameReducer = (state, action) => {
+  const newState = _gameReducer(state, action)
+  return newState
 }

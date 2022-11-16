@@ -39,15 +39,17 @@ export const keyHandler = (state: GameState, action: ActionsMapType['Key']) => {
           return
         }
         case 'r': {
-          if (!fo) return
+          const dir = state.keyboard.shift ? -1 : 1
+          if (fo) {
+            dState.game.objects.some(obj => {
+              if (fo !== obj.id) return
 
-          dState.game.objects.some(obj => {
-            if (fo !== obj.id) return
-
-            const dir = state.keyboard.shift ? -1 : 1
-            obj.rotation = (obj.rotation + dir + 4) % 4 as ObjectRotation
-            return true
-          })
+              obj.rotation = (obj.rotation + dir + 4) % 4 as ObjectRotation
+              return true
+            })
+          } else {
+            dState.game.toolRotation = (dState.game.toolRotation + dir + 4) % 4 as ObjectRotation
+          }
           return
         }
         case 'q': {
@@ -55,6 +57,7 @@ export const keyHandler = (state: GameState, action: ActionsMapType['Key']) => {
           if (tool || fo) {
             const obj = objs.find(o => o.id === fo) as GameObjectType
             dState.game.tool = tool ? null : obj.type
+            dState.game.focusedObject = null
             return
           }
         }

@@ -55,6 +55,7 @@ declare global {
       objects: GameObjectType[]
       focusedObject?: string | null
       tool: ToolType | null
+      toolRotation: ObjectRotation
     }
     keyboard: KeyboardType
   }
@@ -97,16 +98,16 @@ export interface ActionsMapType {
     type: 'showGrid'
     isShown: boolean
   }
-  RotateObject: {
-    type: 'rotateObject'
-    isCW: boolean
-  }
   HoverObject: {
     type: 'hoverObject'
     objId?: string
   }
   SelectTool: {
-    type: 'selectTool',
+    type: 'selectTool'
     toolId: ToolType
+  }
+  PlaceObject: {
+    type: 'placeObject'
+    instance: GameObjectType
   }
 }

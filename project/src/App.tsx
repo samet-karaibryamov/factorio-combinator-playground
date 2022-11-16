@@ -22,6 +22,7 @@ export const INITIAL_STATE: GameState = {
     ],
     focusedObject: null,
     tool: null,
+    toolRotation: 0,
   },
   keyboard: {
     up: false,

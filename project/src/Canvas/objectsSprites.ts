@@ -5,9 +5,9 @@ type ObjectCreator = (x: number, y: number, r: ObjectRotation) => GameObjectType
 export const objectConstrainer = <T>(obj: { [k in keyof T]: ObjectCreator }) => obj
 
 let objId = 0
-const tagObject = (partialObj: Omit<GameObjectType, 'id'>) => ({
-  id: String(objId++),
+export const tagObject = (partialObj: Omit<GameObjectType, 'id'>) => ({
   ...partialObj,
+  id: String(objId++),
 } as GameObjectType)
 
 export const ObjectFactory = objectConstrainer({
@@ -25,4 +25,3 @@ export const ObjectFactory = objectConstrainer({
     },
   }),
 })
-

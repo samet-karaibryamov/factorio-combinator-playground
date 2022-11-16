@@ -1,75 +1,43 @@
-import React, { Fragment, useCallback, useEffect, useRef } from "react"
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import _ from 'lodash'
-import constantCombinatorImg from 'assets/combinator/hr-constant-combinator.png'
+import { Focus } from './Focus'
+import { GameObject } from './GameObject'
+import { clampNumberTo, gameCoordsToSvgCoords, getSvgCoords, svgCoordsToGameCoords } from './utils'
+import { ObjectFactory } from './objectsSprites'
 
-const clampNumberTo = (n: number, clamp: number) => {
-  return (n % clamp + clamp) % clamp
-}
-
-const getSvgCoords = (ev: React.MouseEvent | MouseEvent, svg: SVGSVGElement) => {
-  const bcr = svg.getBoundingClientRect()
-  return {
-    x: ev.clientX - bcr.x,
-    y: ev.clientY - bcr.y,
-  }
-}
-const svgCoordsToGameCoords = (
-  svgCoords: { x: number, y: number },
-  { view }: GameState,
-) => {
-  return {
-    x: (svgCoords.x - view.x) / view.zoom,
-    y: (svgCoords.y - view.y) / view.zoom,
-  }
-}
-
-const gameCoordsToSvgCoords = (
-  gameCoords: { x: number, y: number },
-  { view }: GameState,
-) => {
-  return {
-    x: view.x + gameCoords.x * view.zoom,
-    y: view.y + gameCoords.y * view.zoom,
-  }
-}
 
 const VIEWBOX = { w: 600, h: 600 }
 export const GRID_SQUARE_SIZE = 40
+
+const GHOSTS = {
+  cc: ObjectFactory.CC(0, 0, 0),
+  ac: ObjectFactory.CC(0, 0, 0),
+  dc: ObjectFactory.CC(0, 0, 0),
+} as const
+
+const useToolObject = (state: GameState) => {
+  const [ghostXY, setGhostXY] = useState({ x: 0, y: 0 })
+
+  const { tool } = state.game
+  const gc = svgCoordsToGameCoords(ghostXY, state)
+  gc.x = Math.floor(gc.x / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
+  gc.y = Math.floor(gc.y / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
+  const ghost = !tool
+    ? null
+    : {
+      ...GHOSTS[tool],
+      ...gc,
+      rotation: state.game.toolRotation,
+    }
+
+  return { ghost, setGhostXY }
+}
 
 interface CanvasProps {
   state: GameState
   onZoom: (specs: ZoomSpecs) => void
   dispatch: React.Dispatch<GameActions>
 }
-
-interface GameObjectProps {
-  x: number
-  y: number
-  zoom: number
-  gridSize: number
-  gameObject: GameObjectType
-}
-
-const GameObject = ({ x, y, zoom, gridSize, gameObject }: GameObjectProps) => {
-  const { sprite } = gameObject
-  const spriteOffsetX = sprite.unit.width * gameObject.rotation
-  return (
-    <svg
-      x={x + gameObject.x * zoom - gridSize * 3 / 8}
-      y={y + gameObject.y * zoom - gridSize * 2 / 8}
-      viewBox="0 0 114 102"
-      width={gridSize * 1.775}
-      height={gridSize * 1.625}
-      preserveAspectRatio="none"
-      onClick={console.log}
-      className="game-object"
-    >
-      {/* <rect x={114} y={-6} stroke="red" strokeWidth={1} fill="none" width="100%" height="100%"></rect> */}
-      <image transform={`translate(-${spriteOffsetX} 6)`} href={constantCombinatorImg} />
-    </svg>
-  )
-}
-
 export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
   const {
     x,
@@ -99,6 +67,9 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
       return () => { svg.removeEventListener('wheel', mouseWheelHandler) }
     }
   }, [svgRef.current, mouseWheelHandler])
+
+  const { ghost, setGhostXY } = useToolObject(state)
+
   return (
     <div style={{ border: '1px solid red', display: 'inline-flex' }}>
       <svg
@@ -107,16 +78,26 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         style={{ width: VIEWBOX.w, height: VIEWBOX.h }}
         onMouseMove={(ev) => {
           const svgCoords = getSvgCoords(ev, ev.currentTarget)
+
+          setGhostXY(svgCoords)
+
+          // FOCUS OBJECT
           const { x, y } = svgCoordsToGameCoords(svgCoords, state)
           const obj = state.game.objects.find(obj => (
             obj.x <= x && x <= obj.x + GRID_SQUARE_SIZE &&
             obj.y <= y && y <= obj.y + GRID_SQUARE_SIZE
           ))
-          if (obj?.id !== state.game.focusedObject) {
+          if (obj?.id !== state.game.focusedObject && !ghost) {
             dispatch({ type: 'hoverObject', objId: obj?.id })
           }
         }}
-        onClick={ev => console.log(getSvgCoords(ev, ev.currentTarget))}
+        onClick={ev => {
+          console.log(getSvgCoords(ev, ev.currentTarget))
+
+          if (ghost) {
+            dispatch({ type: 'placeObject', instance: ghost })
+          }
+        }}
       >
         <g>
           <rect x="0" y="0" width="100%" height="100%" fill="#313031"></rect>
@@ -170,29 +151,25 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         {_.sortBy(state.game.objects, (obj) => obj.y).map((obj, i) =>
           <GameObject
             key={i}
-            x={x}
-            y={y}
             gridSize={scaledGridSize}
-            zoom={zoom}
+            view={state.view}
             gameObject={obj}
           />
         )}
         {state.game.objects
           .filter(obj => obj.id === state.game.focusedObject)
-          .map(obj => {
-            const SQ_EXPAND = 10 * zoom
-            const len = (scaledGridSize + SQ_EXPAND) / 3
-            const anchor = gameCoordsToSvgCoords(obj, state)
-            const d= [
-              `M ${anchor.x - SQ_EXPAND / 2},${anchor.y - SQ_EXPAND / 2 + len}`,
-              `v ${-len}`, `h ${len}`, `m ${len},0`,
-              `h ${len}`, `v ${len}`, `m 0,${len}`,
-              `v ${len}`, `h ${-len}`, `m ${-len},0`,
-              `h ${-len}`, `v ${-len}`,
-            ].join(' ')
-
-            return <path key="focus" d={d} stroke="gold" strokeWidth={3 * zoom} fill="none" />
-          })
+          .map(obj => <Focus key="focus" {...{ scaledGridSize, state, obj }} />)
+        }
+        {!ghost
+          ? null
+          : (
+            <GameObject
+              view={state.view}
+              gameObject={ghost}
+              gridSize={scaledGridSize}
+              type="tool"
+            />
+          )
         }
       </svg>
     </div>
