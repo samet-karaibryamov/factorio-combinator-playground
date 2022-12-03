@@ -2,17 +2,17 @@ import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } fr
 import _ from 'lodash'
 import { Focus } from './Focus'
 import { GameObject } from './GameObject'
-import { clampNumberTo, gameCoordsToSvgCoords, getSvgCoords, svgCoordsToGameCoords } from './utils'
-import { ObjectFactory } from './objectsSprites'
+import { clampNumberTo, getSvgCoords, svgCoordsToGameCoords } from './utils'
+import { ObjectFactory, ObjectTypeSpecs } from './objectsSprites'
+import { GRID_SQUARE_SIZE } from 'consts'
 
 
 const VIEWBOX = { w: 600, h: 600 }
-export const GRID_SQUARE_SIZE = 40
 
 const GHOSTS = {
   cc: ObjectFactory.CC(0, 0, 0),
-  ac: ObjectFactory.CC(0, 0, 0),
-  dc: ObjectFactory.CC(0, 0, 0),
+  ac: ObjectFactory.AC(0, 0, 0),
+  dc: ObjectFactory.DC(0, 0, 0),
 } as const
 
 const useToolObject = (state: GameState) => {
@@ -83,10 +83,13 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
 
           // FOCUS OBJECT
           const { x, y } = svgCoordsToGameCoords(svgCoords, state)
-          const obj = state.game.objects.find(obj => (
-            obj.x <= x && x <= obj.x + GRID_SQUARE_SIZE &&
-            obj.y <= y && y <= obj.y + GRID_SQUARE_SIZE
-          ))
+          const obj = state.game.objects.find(obj => {
+            const bbox = ObjectTypeSpecs[obj.type].getBBox(obj)
+            return (
+              bbox.left <= x && x <= bbox.right &&
+              bbox.top <= y && y <= bbox.bottom
+            )
+          })
           if (obj?.id !== state.game.focusedObject && !ghost) {
             dispatch({ type: 'hoverObject', objId: obj?.id })
           }

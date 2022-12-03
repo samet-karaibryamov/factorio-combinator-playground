@@ -15,10 +15,10 @@ export const INITIAL_STATE: GameState = {
   },
   game: {
     objects: [
-      ObjectFactory.CC(80, 120, 0),
-      ObjectFactory.CC(40, 40, 1),
-      ObjectFactory.CC(40, 80, 2),
-      ObjectFactory.CC(80, 80, 3),
+      ObjectFactory.CC(120, 40, 0),
+      ObjectFactory.CC(160, 120, 1),
+      ObjectFactory.CC(120, 160, 2),
+      ObjectFactory.CC(40, 120, 3),
     ],
     focusedObject: null,
     tool: null,
@@ -89,6 +89,7 @@ function App() {
         <div>{JSON.stringify(state.view)}</div>
         <div>{JSON.stringify(state.keyboard)}</div>
         <div>Focused: {state.game.focusedObject}</div>
+        <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
         <ShowGridToggle dispatch={dispatch} state={state} />
         <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
       </div>

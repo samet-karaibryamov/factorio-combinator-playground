@@ -27,12 +27,19 @@ declare global {
     y: number
     rotation: ObjectRotation
     type: ToolType
+    width: number
+    height: number
     sprite: {
       href: string
       unit: {
-        width: number
-        height: number
+        w: number
+        h: number
       }
+      scale: number
+      rotationOffset: Array<{
+        x: number
+        y: number
+      }>
     }
   }
 
@@ -109,5 +116,10 @@ export interface ActionsMapType {
   PlaceObject: {
     type: 'placeObject'
     instance: GameObjectType
+  }
+  SetState: {
+    type: 'setState'
+    path: string
+    value: any
   }
 }

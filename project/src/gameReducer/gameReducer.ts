@@ -1,6 +1,9 @@
 import { tagObject } from 'Canvas/objectsSprites'
-import immUpdate from 'immutability-helper'
+import produce, { setAutoFreeze } from 'immer'
+import _ from 'lodash'
 import { keyHandler } from './keyHandler'
+
+// setAutoFreeze(false)
 
 const MAX_ZOOM = 2
 const MIN_ZOOM = 0.5
@@ -14,71 +17,47 @@ const DIR_MAP = {
 }
 
 export const _gameReducer = (state: GameState, action: GameActions) => {
-  switch (action.type) {
-    case 'keyup':
-    case 'keydown': return keyHandler(state, action)
-    case 'step':
-      const newGameState = { ...state.view }
-      const pan = PAN_PIXELS_PS * action.dt / 500
+  if (action.type === 'step') {
+    const newGameState = { ...state.view }
+    const pan = PAN_PIXELS_PS * action.dt / 500
 
-      let isUpdated = false
-      ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {
-        if (state.keyboard[dir]) {
-          isUpdated = true
-          newGameState.x += DIR_MAP[dir].dx * pan
-          newGameState.y += DIR_MAP[dir].dy * pan
-        }
-      })
-      if (!isUpdated) return state
-
-      return { ...state, view: newGameState }
-    case 'zoom': {
-      const { dz, svgX, svgY } = action
-      const { view } = state
-      const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, state.view.zoom + dz))
-
-      const x = svgX - (svgX - view.x) * zoom / view.zoom
-      const y = svgY - (svgY - view.y) * zoom / view.zoom
-
-      return {
-        ...state,
-        view: {
-          ...state.view,
-          x,
-          y,
-          zoom,
-        }
+    let isUpdated = false
+    ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {
+      if (state.keyboard[dir]) {
+        isUpdated = true
+        newGameState.x += DIR_MAP[dir].dx * pan
+        newGameState.y += DIR_MAP[dir].dy * pan
       }
-    }
-    case 'showGrid': {
-      return {
-        ...state,
-        view: {
-          ...state.view,
-          isGridShown: action.isShown
-        }
-      }
-    }
-    case 'hoverObject': {
-      return {
-        ...state,
-        game: {
-          ...state.game,
-          focusedObject: action.objId,
-        }
-      }
-    }
-    case 'selectTool': {
-      return immUpdate(state, { game: { tool: { $set: action.toolId } } })
-    }
-    case 'placeObject': {
-      return immUpdate(state, { game: { objects: { $push: [tagObject(action.instance)] } } })
-    }
-    default:
-      break;
+    })
+    // if (!isUpdated) return state
+
+    return { ...state, view: newGameState }
   }
 
-  return state
+  return produce(state, (dState) => {
+    switch (action.type) {
+      case 'setState': _.set(dState, action.path, action.value); return
+      case 'keyup':
+      case 'keydown': keyHandler(dState, action); return
+      case 'showGrid': dState.view.isGridShown = action.isShown; return
+      case 'hoverObject': dState.game.focusedObject = action.objId; return
+      case 'selectTool': dState.game.tool = action.toolId; return
+      case 'placeObject': dState.game.objects.push(tagObject(action.instance)); return
+      case 'zoom': {
+        const { dz, svgX, svgY } = action
+        const { view } = dState
+        const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, state.view.zoom + dz))
+
+        const x = svgX - (svgX - view.x) * zoom / view.zoom
+        const y = svgY - (svgY - view.y) * zoom / view.zoom
+
+        view.x = x
+        view.y = y
+        view.zoom = zoom
+        return
+      }
+    }
+  })
 }
 
 export const gameReducer: typeof _gameReducer = (state, action) => {
