@@ -22,13 +22,14 @@ const useToolObject = (state: GameState) => {
   const gc = svgCoordsToGameCoords(ghostXY, state)
   gc.x = Math.floor(gc.x / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
   gc.y = Math.floor(gc.y / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
-  const ghost = !tool
-    ? null
-    : {
-      ...GHOSTS[tool],
+  const ghost = tool && tool in GHOSTS
+    ? {
+      // Fix after TS version is fixed
+      ...GHOSTS[tool as unknown as keyof typeof GHOSTS],
       ...gc,
       rotation: state.game.toolRotation,
     }
+    : null
 
   return { ghost, setGhostXY }
 }

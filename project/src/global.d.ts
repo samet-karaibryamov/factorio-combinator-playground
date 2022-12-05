@@ -1,4 +1,5 @@
 import { SpriteDef } from 'Canvas/objectsSprites'
+import { OBJECT_TOOL_TYPES, TOOL_TYPES } from 'consts'
 import { INITIAL_STATE } from './App'
 
 export {}
@@ -26,7 +27,7 @@ declare global {
     x: number
     y: number
     rotation: ObjectRotation
-    type: ToolType
+    type: ObjectToolType
     width: number
     height: number
     sprite: {
@@ -67,7 +68,8 @@ declare global {
     keyboard: KeyboardType
   }
 
-  type ToolType = 'cc' | 'ac' | 'dc'
+  type ObjectToolType = (typeof OBJECT_TOOL_TYPES)[number]
+  type ToolType = (typeof TOOL_TYPES)[number]
 
   interface ZoomSpecs {
     dz: number

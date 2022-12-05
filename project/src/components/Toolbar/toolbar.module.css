@@ -15,6 +15,7 @@
     width: 32px;
     height: 32px;
     border: 1px solid #4B4543;
+    cursor: pointer;
 
     &:hover, &.active {
       background-color: #e39827;

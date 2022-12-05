@@ -89,7 +89,7 @@ interface Specs {
   getBBox: typeof getBBox
 }
 
-export const ObjectTypeSpecs: { [k in ToolType]: Specs } = {
+export const ObjectTypeSpecs: { [k in ObjectToolType]: Specs } = {
   ac: {
     getBBox,
   },
