@@ -10,10 +10,10 @@ const MIN_ZOOM = 0.5
 const PAN_PIXELS_PS = 80
 
 const DIR_MAP = {
-  up: { dx: 0, dy: -1 },
-  down: { dx: 0, dy: 1 },
-  left: { dx: -1, dy: 0 },
-  right: { dx: 1, dy: 0 },
+  up: { dx: 0, dy: 1 },
+  down: { dx: 0, dy: -1 },
+  left: { dx: 1, dy: 0 },
+  right: { dx: -1, dy: 0 },
 }
 
 export const _gameReducer = (state: GameState, action: GameActions) => {

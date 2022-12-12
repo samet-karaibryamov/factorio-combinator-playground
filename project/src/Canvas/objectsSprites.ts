@@ -5,7 +5,7 @@ import { GRID_SQUARE_SIZE } from 'consts'
 
 type ObjectCreator = (x: number, y: number, r: ObjectRotation) => GameObjectType
 
-export const objectConstrainer = <T>(obj: { [k in keyof T]: ObjectCreator }) => obj
+const objectConstrainer = <T>(obj: { [k in keyof T]: ObjectCreator }) => obj
 
 let objId = 0
 export const tagObject = (partialObj: Omit<GameObjectType, 'id'>) => ({
@@ -20,6 +20,24 @@ const acSprite: GameObjectType['sprite'] = {
   rotationOffset: [
     { x: -23, y: 10 },
     { x: -4, y: -8.5 },
+  ],
+  knobs: [
+    {
+      rotations: [
+        { red: { x: 9.5, y: 11 }, green: { x: 0, y: 0 } },
+        { red: { x: 68, y: 4 }, green: { x: 0, y: 0 } },
+        { red: { x: 32.5, y: 57 }, green: { x: 0, y: 0 } },
+        { red: { x: 12, y: 21 }, green: { x: 0, y: 0 } },
+      ]
+    },
+    {
+      rotations: [
+        { red: { x: 10, y: 55 }, green: { x: 0, y: 0 } },
+        { red: { x: 8, y: 2 }, green: { x: 0, y: 0 } },
+        { red: { x: 32, y: 12 }, green: { x: 0, y: 0 } },
+        { red: { x: 71, y: 19 }, green: { x: 0, y: 0 } }
+      ]
+    },
   ]
 }
 const dcSprite: GameObjectType['sprite'] = {
@@ -29,13 +47,39 @@ const dcSprite: GameObjectType['sprite'] = {
   rotationOffset: [
     { x: -27, y: 5 },
     { x: -6, y: -8.5 },
+  ],
+  knobs: [
+    {
+      rotations: [
+        { red: { x: 8.5, y: 10 }, green: { x: 0, y: 0 } },
+        { red: { x: 67, y: 1.5 }, green: { x: 0, y: 0 } },
+        { red: { x: 31, y: 57 }, green: { x: 0, y: 0 } },
+        { red: { x: 15, y: 18 }, green: { x: 0, y: 0 } }
+      ]
+    },
+    {
+      rotations: [
+        { red: { x: 9, y: 54 }, green: { x: 0, y: 0 } },
+        { red: { x: 10.5, y: 0 }, green: { x: 0, y: 0 } },
+        { red: { x: 30, y: 12 }, green: { x: 0, y: 0 } },
+        { red: { x: 71, y: 18 }, green: { x: 0, y: 0 } }
+      ]
+    }
   ]
 }
 const ccSprite: GameObjectType['sprite'] = {
   href: constantCombinatorImg,
   unit: { w: 114, h: 102 },
   scale: 1.6,
-  rotationOffset: [{ x: -15.5, y: -6 }]
+  rotationOffset: [{ x: -15.5, y: -6 }],
+  knobs: [{
+    rotations: [
+      { red: { x: 10, y: 0 }, green: { x: 0, y: 0 } },
+      { red: { x: 40, y: 0 }, green: { x: 0, y: 0 } },
+      { red: { x: 32, y: 30 }, green: { x: 0, y: 0 } },
+      { red: { x: 0, y: 19 }, green: { x: 0, y: 0 } }
+    ]
+  }]
 }
 
 // window.acSprite = acSprite
@@ -65,7 +109,7 @@ export const ObjectFactory = objectConstrainer({
     x,
     y,
     rotation: r,
-    type: 'ac',
+    type: 'dc',
     width: 1,
     height: 2,
     sprite: dcSprite,

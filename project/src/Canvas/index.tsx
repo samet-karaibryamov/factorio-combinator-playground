@@ -5,6 +5,7 @@ import { GameObject } from './GameObject'
 import { clampNumberTo, getSvgCoords, svgCoordsToGameCoords } from './utils'
 import { ObjectFactory, ObjectTypeSpecs } from './objectsSprites'
 import { GRID_SQUARE_SIZE } from 'consts'
+import { Wire } from './Wire'
 
 
 const VIEWBOX = { w: 600, h: 600 }
@@ -158,6 +159,13 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
             gridSize={scaledGridSize}
             view={state.view}
             gameObject={obj}
+          />
+        )}
+        {state.game.wires.map(w =>
+          <Wire
+            key={w.id}
+            wire={w}
+            state={state}
           />
         )}
         {state.game.objects

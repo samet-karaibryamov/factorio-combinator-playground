@@ -1,5 +1,5 @@
 import { SpriteDef } from 'Canvas/objectsSprites'
-import { OBJECT_TOOL_TYPES, TOOL_TYPES } from 'consts'
+import { OBJECT_TOOL_TYPES, TOOL_TYPES, WIRE_TOOL_TYPES } from 'consts'
 import { INITIAL_STATE } from './App'
 
 export {}
@@ -41,7 +41,22 @@ declare global {
         x: number
         y: number
       }>
+      knobs: Array<{
+        rotations: Array<{
+          red: { x: number, y: number },
+          green: { x: number, y: number },
+        }>
+      }>
     }
+  }
+
+  type WireObjectType = {
+    id: string
+    color: (typeof WIRE_TOOL_TYPES)[number]
+    targets: Array<{
+      objectId: string
+      knobIndex: number
+    }>
   }
 
   interface KeyboardType {
@@ -61,6 +76,7 @@ declare global {
     }
     game: {
       objects: GameObjectType[]
+      wires: WireObjectType[]
       focusedObject?: string | null
       tool: ToolType | null
       toolRotation: ObjectRotation
@@ -68,6 +84,7 @@ declare global {
     keyboard: KeyboardType
   }
 
+  type WireToolType = (typeof WIRE_TOOL_TYPES)[number]
   type ObjectToolType = (typeof OBJECT_TOOL_TYPES)[number]
   type ToolType = (typeof TOOL_TYPES)[number]
 

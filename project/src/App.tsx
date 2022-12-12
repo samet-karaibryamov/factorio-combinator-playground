@@ -1,4 +1,5 @@
 import { ObjectFactory } from 'Canvas/objectsSprites'
+import { WireFactory } from 'Canvas/wireFactory'
 import { Toolbar } from 'components/Toolbar'
 import { gameReducer } from 'gameReducer/gameReducer'
 import { useCallback, useEffect, useReducer } from 'react'
@@ -15,11 +16,12 @@ export const INITIAL_STATE: GameState = {
   },
   game: {
     objects: [
-      ObjectFactory.CC(120, 40, 0),
-      ObjectFactory.CC(160, 120, 1),
-      ObjectFactory.CC(120, 160, 2),
-      ObjectFactory.CC(40, 120, 3),
+      ObjectFactory.DC(120, 40, 0),
+      ObjectFactory.AC(160, 120, 1),
+      ObjectFactory.DC(120, 160, 2),
+      ObjectFactory.AC(40, 120, 3),
     ],
+    wires: [],
     focusedObject: null,
     tool: null,
     toolRotation: 0,
@@ -32,6 +34,15 @@ export const INITIAL_STATE: GameState = {
     shift: false,
   },
 }
+
+const objs = INITIAL_STATE.game.objects
+INITIAL_STATE.game.wires.push(WireFactory({
+  color: 'rw',
+  targets: [
+    { objectId: objs[2].id, knobIndex: 0 },
+    { objectId: objs[0].id, knobIndex: 1 },
+  ]
+}))
 
 const useGameLoop = () => {
   const [state, dispatch] = useReducer(gameReducer, INITIAL_STATE)
