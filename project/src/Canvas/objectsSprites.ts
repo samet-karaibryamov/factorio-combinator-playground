@@ -24,18 +24,18 @@ const acSprite: GameObjectType['sprite'] = {
   knobs: [
     {
       rotations: [
-        { red: { x: 9.5, y: 11 }, green: { x: 0, y: 0 } },
-        { red: { x: 68, y: 4 }, green: { x: 0, y: 0 } },
-        { red: { x: 32.5, y: 57 }, green: { x: 0, y: 0 } },
-        { red: { x: 12, y: 21 }, green: { x: 0, y: 0 } },
+        { red: { x: 9.5, y: 11 }, green: { x: 32, y: 11.5 } },
+        { red: { x: 68, y: 4 }, green: { x: 67, y: 21 } },
+        { red: { x: 32.5, y: 57 }, green: { x: 9, y: 58 } },
+        { red: { x: 12, y: 21 }, green: { x: 12, y: 5 } },
       ]
     },
     {
       rotations: [
-        { red: { x: 10, y: 55 }, green: { x: 0, y: 0 } },
-        { red: { x: 8, y: 2 }, green: { x: 0, y: 0 } },
-        { red: { x: 32, y: 12 }, green: { x: 0, y: 0 } },
-        { red: { x: 71, y: 19 }, green: { x: 0, y: 0 } }
+        { red: { x: 10, y: 55 }, green: { x: 32, y: 55.5 } },
+        { red: { x: 8, y: 2 }, green: { x: 8, y: 18 } },
+        { red: { x: 32, y: 12 }, green: {x: 9.5, y: 11} },
+        { red: { x: 71, y: 19 }, green: { x: 71, y: 2 } }
       ]
     },
   ]
@@ -51,18 +51,18 @@ const dcSprite: GameObjectType['sprite'] = {
   knobs: [
     {
       rotations: [
-        { red: { x: 8.5, y: 10 }, green: { x: 0, y: 0 } },
-        { red: { x: 67, y: 1.5 }, green: { x: 0, y: 0 } },
-        { red: { x: 31, y: 57 }, green: { x: 0, y: 0 } },
-        { red: { x: 15, y: 18 }, green: { x: 0, y: 0 } }
+        { red: { x: 8.5, y: 10 }, green: { x: 31, y: 10 } },
+        { red: { x: 67, y: 1.5 }, green: {x: 67, y: 18} },
+        { red: { x: 31, y: 57 }, green: {x: 8.5, y: 57} },
+        { red: { x: 15, y: 18 }, green: { x: 15, y: 2 } }
       ]
     },
     {
       rotations: [
-        { red: { x: 9, y: 54 }, green: { x: 0, y: 0 } },
-        { red: { x: 10.5, y: 0 }, green: { x: 0, y: 0 } },
-        { red: { x: 30, y: 12 }, green: { x: 0, y: 0 } },
-        { red: { x: 71, y: 18 }, green: { x: 0, y: 0 } }
+        { red: { x: 9, y: 54 }, green: { x: 30, y: 53 } },
+        { red: { x: 10.5, y: 0 }, green: { x: 11, y: 18 } },
+        { red: { x: 30, y: 12 }, green: { x: 9, y: 12 } },
+        { red: { x: 71, y: 18 }, green: {x: 70, y: 0 } },
       ]
     }
   ]
@@ -82,9 +82,13 @@ const ccSprite: GameObjectType['sprite'] = {
   }]
 }
 
-// window.acSprite = acSprite
-// window.dcSprite = dcSprite
-// window.ccSprite = ccSprite
+if (import.meta.env.DEV) {
+  Object.assign(window, {
+    acSprite,
+    dcSprite,
+    ccSprite,
+  })
+}
 
 export const ObjectFactory = objectConstrainer({
   CC: (x, y, r) => tagObject({

@@ -3,7 +3,9 @@ import produce, { setAutoFreeze } from 'immer'
 import _ from 'lodash'
 import { keyHandler } from './keyHandler'
 
-// setAutoFreeze(false)
+if (import.meta.env.DEV) {
+  setAutoFreeze(false)
+}
 
 const MAX_ZOOM = 2
 const MIN_ZOOM = 0.5
@@ -19,7 +21,7 @@ const DIR_MAP = {
 export const _gameReducer = (state: GameState, action: GameActions) => {
   if (action.type === 'step') {
     const newGameState = { ...state.view }
-    const pan = PAN_PIXELS_PS * action.dt / 500
+    const pan = PAN_PIXELS_PS * action.dt / 400
 
     let isUpdated = false
     ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {

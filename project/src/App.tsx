@@ -37,10 +37,17 @@ export const INITIAL_STATE: GameState = {
 
 const objs = INITIAL_STATE.game.objects
 INITIAL_STATE.game.wires.push(WireFactory({
+  color: 'gw',
+  targets: [
+    { objectId: objs[1].id, knobIndex: 1 },
+    { objectId: objs[3].id, knobIndex: 0 },
+  ]
+}))
+INITIAL_STATE.game.wires.push(WireFactory({
   color: 'rw',
   targets: [
-    { objectId: objs[2].id, knobIndex: 0 },
-    { objectId: objs[0].id, knobIndex: 1 },
+    { objectId: objs[1].id, knobIndex: 1 },
+    { objectId: objs[3].id, knobIndex: 0 },
   ]
 }))
 
