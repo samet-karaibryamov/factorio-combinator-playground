@@ -1,5 +1,31 @@
 import { gameCoordsToSvgCoords } from './utils'
 
+const calcArcTip = (p1: Coords, p2: Coords): Coords => {
+  const AMPLITUDE_COEF = 0.2
+  const AB = {
+    x: p1.x - p2.x,
+    y: p1.y - p2.y,
+  }
+  const d = Math.sqrt(AB.x * AB.x + AB.y * AB.y)
+
+  const C = {
+    x: (p1.x + p2.x) / 2,
+    y: (p1.y + p2.y) / 2,
+  }
+  
+  const N = {
+    x: -AB.y / d,
+    y: AB.x / d,
+  }
+
+  const coef = AB.x * AMPLITUDE_COEF
+  const H = {
+    x: C.x + N.x * coef,
+    y: C.y + N.y * coef,
+  }
+  return H
+}
+
 export const Wire = ({
   wire,
   state,
@@ -19,6 +45,7 @@ export const Wire = ({
     }
     return gameCoordsToSvgCoords(knobCoords, state)
   })
-  const d = `M${anchors[0].x},${anchors[0].y} L${anchors[1].x},${anchors[1].y}`
+  const arcTip = calcArcTip(anchors[0], anchors[1])
+  const d = `M${anchors[0].x},${anchors[0].y} Q${arcTip.x},${arcTip.y} ${anchors[1].x},${anchors[1].y}`
   return <path d={d} fill="none" stroke={colorName} />
 }

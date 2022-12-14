@@ -21,6 +21,8 @@ type PartialPartial<T, Keys extends keyof T> = Omit<
 , never>
 
 declare global {
+  type Coords = { x: number, y: number }
+
   type ObjectRotation = 0 | 1 | 2 | 3
   type GameObjectType = {
     id: string
