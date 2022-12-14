@@ -111,7 +111,7 @@ export interface ActionsMapType {
   }
   Key: {
     type: 'keyup' | 'keydown'
-    key: string
+    code: string
   }
   Step: {
     type: 'step'

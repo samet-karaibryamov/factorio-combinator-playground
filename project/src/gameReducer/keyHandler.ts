@@ -3,17 +3,17 @@ import { ActionsMapType } from 'global'
 import { WritableDraft } from 'immer/dist/internal'
 
 const KEY_MAP = {
-  w: 'up',
-  s: 'down',
-  a: 'left',
-  d: 'right',
+  KeyW: 'up',
+  KeyS: 'down',
+  KeyA: 'left',
+  KeyD: 'right',
 } as const
 
 export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapType['Key']) => {
-  const key = action.key.toLowerCase()
+  const { code } = action
   const canPan = !dState.keyboard.shift
-  const mapped = KEY_MAP[key as keyof typeof KEY_MAP] || key
-  if (mapped in dState.keyboard && (key === 'shift' || canPan)) {
+  const mapped = KEY_MAP[code as keyof typeof KEY_MAP] || code
+  if (mapped in dState.keyboard && (code.startsWith('Shift') || canPan)) {
     dState.keyboard[mapped] = action.type === 'keydown'
     return
   }
@@ -21,13 +21,13 @@ export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapT
   if (action.type === 'keyup') {
     const { game } = dState
     const { focusedObject: fo } = game
-    switch (key) {
-      case 'w':
-      case 'a':
-      case 's':
-      case 'd': {
+    switch (code) {
+      case 'KeyW':
+      case 'KeyA':
+      case 'KeyS':
+      case 'KeyD': {
         if (!fo) return
-        const [dx, dy] = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] }[key]
+        const [dx, dy] = { KeyW: [0, -1], KeyA: [-1, 0], KeyS: [0, 1], KeyD: [1, 0] }[code]
         dState.game.objects.some(obj => {
           if (fo !== obj.id) return
 
