@@ -21,7 +21,7 @@ const DIR_MAP = {
 export const _gameReducer = (state: GameState, action: GameActions) => {
   if (action.type === 'step') {
     const newGameState = { ...state.view }
-    const pan = PAN_PIXELS_PS * action.dt / 400
+    const pan = PAN_PIXELS_PS * action.dt / 300
 
     let isUpdated = false
     ;(['up', 'down', 'left', 'right'] as Array<keyof typeof DIR_MAP>).forEach((dir) => {

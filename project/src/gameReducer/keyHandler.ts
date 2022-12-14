@@ -10,15 +10,15 @@ const KEY_MAP = {
 } as const
 
 export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapType['Key']) => {
-  const { code } = action
-  const canPan = !dState.keyboard.shift
-  const mapped = KEY_MAP[code as keyof typeof KEY_MAP] || code
-  if (mapped in dState.keyboard && (code.startsWith('Shift') || canPan)) {
+  const { code, ev: { shiftKey } } = action
+  const canPan = !shiftKey
+  const mapped = KEY_MAP[code as keyof typeof KEY_MAP]
+  if (mapped in dState.keyboard && canPan) {
     dState.keyboard[mapped] = action.type === 'keydown'
     return
   }
 
-  if (action.type === 'keyup') {
+  if (action.type === 'keydown') {
     const { game } = dState
     const { focusedObject: fo } = game
     switch (code) {
@@ -27,6 +27,7 @@ export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapT
       case 'KeyS':
       case 'KeyD': {
         if (!fo) return
+        if (!shiftKey) return
         const [dx, dy] = { KeyW: [0, -1], KeyA: [-1, 0], KeyS: [0, 1], KeyD: [1, 0] }[code]
         dState.game.objects.some(obj => {
           if (fo !== obj.id) return
@@ -37,7 +38,7 @@ export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapT
         })
         return
       }
-      case 'r': {
+      case 'KeyR': {
         const dir = dState.keyboard.shift ? -1 : 1
         if (fo) {
           dState.game.objects.some(obj => {
@@ -51,7 +52,7 @@ export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapT
         }
         return
       }
-      case 'q': {
+      case 'KeyQ': {
         const { tool, objects: objs } = dState.game
         if (tool || fo) {
           const obj = objs.find(o => o.id === fo) as GameObjectType

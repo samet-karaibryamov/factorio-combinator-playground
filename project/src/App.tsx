@@ -54,8 +54,8 @@ INITIAL_STATE.game.wires.push(WireFactory({
 const useGameLoop = () => {
   const [state, dispatch] = useReducer(gameReducer, INITIAL_STATE)
 
-  const keyDownHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keydown', code: ev.code }) }, [])
-  const keyUpHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keyup', code: ev.code }) }, [])
+  const keyDownHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keydown', code: ev.code, ev }) }, [])
+  const keyUpHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keyup', code: ev.code, ev }) }, [])
   const onZoom = useCallback((zSpecs: ZoomSpecs) => { dispatch({ type: 'zoom', ...zSpecs }) }, [])
 
   useEffect(() => {
