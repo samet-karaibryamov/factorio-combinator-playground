@@ -1,8 +1,8 @@
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import _ from 'lodash'
 import { Focus } from './Focus'
 import { GameObject } from './GameObject'
-import { clampNumberTo, getSvgCoords, svgCoordsToGameCoords } from './utils'
+import { clampNumberTo, gameCoordsToClampedObjectCoords, getSvgCoords, svgCoordsToGameCoords } from './mathUtils'
 import { ObjectFactory, ObjectTypeSpecs } from './objectsSprites'
 import { GRID_SQUARE_SIZE } from 'consts'
 import { Wire } from './Wire'
@@ -11,28 +11,26 @@ import { Wire } from './Wire'
 const VIEWBOX = { w: 600, h: 600 }
 
 const GHOSTS = {
-  cc: ObjectFactory.CC(0, 0, 0),
-  ac: ObjectFactory.AC(0, 0, 0),
-  dc: ObjectFactory.DC(0, 0, 0),
+  cc: ObjectFactory.cc(0, 0, 0),
+  ac: ObjectFactory.ac(0, 0, 0),
+  dc: ObjectFactory.dc(0, 0, 0),
 } as const
 
-const useToolObject = (state: GameState) => {
-  const [ghostXY, setGhostXY] = useState({ x: 0, y: 0 })
-
+const useToolObject = (state: GameState, mouseXY: Coords) => {
   const { tool } = state.game
-  const gc = svgCoordsToGameCoords(ghostXY, state)
-  gc.x = Math.floor(gc.x / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
-  gc.y = Math.floor(gc.y / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
-  const ghost = tool && tool in GHOSTS
+  const gc = svgCoordsToGameCoords(mouseXY, state)
+  const oc = gameCoordsToClampedObjectCoords(gc)
+
+  const ghost: GameObjectType | null = tool && tool in GHOSTS
     ? {
       // Fix after TS version is fixed
       ...GHOSTS[tool as unknown as keyof typeof GHOSTS],
-      ...gc,
+      ...oc,
       rotation: state.game.toolRotation,
     }
     : null
 
-  return { ghost, setGhostXY }
+  return { ghost }
 }
 
 interface CanvasProps {
@@ -70,7 +68,8 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
     }
   }, [svgRef.current, mouseWheelHandler])
 
-  const { ghost, setGhostXY } = useToolObject(state)
+  const [mouseXY, setMouseXY] = useState<Coords>({ x: 0, y: 0 })
+  const { ghost } = useToolObject(state, mouseXY)
 
   return (
     <div style={{ border: '1px solid red', display: 'inline-flex' }}>
@@ -81,27 +80,22 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         onMouseMove={(ev) => {
           const svgCoords = getSvgCoords(ev, ev.currentTarget)
 
-          setGhostXY(svgCoords)
+          setMouseXY(svgCoords)
 
           // FOCUS OBJECT
-          const { x, y } = svgCoordsToGameCoords(svgCoords, state)
-          const obj = state.game.objects.find(obj => {
-            const bbox = ObjectTypeSpecs[obj.type].getBBox(obj)
-            return (
-              bbox.left <= x && x <= bbox.right &&
-              bbox.top <= y && y <= bbox.bottom
-            )
-          })
+          const gameCoords = svgCoordsToGameCoords(svgCoords, state)
+          const obj = state.game.objects.find(obj => ObjectTypeSpecs[obj.type].checkHit(obj, gameCoords))
           if (obj?.id !== state.game.focusedObject && !ghost) {
             dispatch({ type: 'hoverObject', objId: obj?.id })
           }
         }}
         onClick={ev => {
-          console.log(getSvgCoords(ev, ev.currentTarget))
-
-          if (ghost) {
-            dispatch({ type: 'placeObject', instance: ghost })
-          }
+          // if (ghost) {
+          //   dispatch({ type: 'placeObject', instance: ghost })
+          // }
+          const svgCoords = getSvgCoords(ev, ev.currentTarget)
+          const gameCoords = svgCoordsToGameCoords(svgCoords, state)
+          dispatch({ type: 'onClick', gameCoords })
         }}
       >
         <g>
@@ -182,6 +176,16 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
               type="tool"
             />
           )
+        }
+        {state.game.toolObject
+          ? (
+            <Wire
+              wire={state.game.toolObject as WireObjectType}
+              state={state}
+              mouseCoords={mouseXY}
+            />
+          )
+          : null
         }
       </svg>
     </div>

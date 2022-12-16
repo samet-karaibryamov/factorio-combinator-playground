@@ -82,6 +82,7 @@ declare global {
       focusedObject?: string | null
       tool: ToolType | null
       toolRotation: ObjectRotation
+      toolObject?: GameObjectType | WireObjectType | null
     }
     keyboard: KeyboardType
   }
@@ -143,5 +144,9 @@ export interface ActionsMapType {
     type: 'setState'
     path: string
     value: any
+  }
+  OnClick: {
+    type: 'onClick'
+    gameCoords: Coords
   }
 }

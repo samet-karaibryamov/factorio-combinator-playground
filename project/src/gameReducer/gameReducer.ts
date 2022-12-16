@@ -1,7 +1,13 @@
-import { tagObject } from 'Canvas/objectsSprites'
+import { ObjectFactory, ObjectTypeSpecs, tagObject } from 'Canvas/objectsSprites'
+import { gameCoordsToClampedObjectCoords } from 'Canvas/mathUtils'
+import { WireFactory } from 'Canvas/wireFactory'
+import { OBJECT_TOOL_TYPES, WIRE_TOOL_TYPES } from 'consts'
+import { ActionsMapType } from 'global'
 import produce, { setAutoFreeze } from 'immer'
+import { WritableDraft } from 'immer/dist/internal'
 import _ from 'lodash'
 import { keyHandler } from './keyHandler'
+import { matchWires } from 'utils/matchWires'
 
 if (import.meta.env.DEV) {
   setAutoFreeze(false)
@@ -16,6 +22,61 @@ const DIR_MAP = {
   down: { dx: 0, dy: -1 },
   left: { dx: 1, dy: 0 },
   right: { dx: -1, dy: 0 },
+}
+
+const handleZoom = (dState: WritableDraft<GameState>, action: ActionsMapType['Zoom']) => {
+  const { dz, svgX, svgY } = action
+  const { view } = dState
+  const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, dState.view.zoom + dz))
+
+  const x = svgX - (svgX - view.x) * zoom / view.zoom
+  const y = svgY - (svgY - view.y) * zoom / view.zoom
+
+  view.x = x
+  view.y = y
+  view.zoom = zoom
+}
+
+const isIncluded = <T,>(arr: ReadonlyArray<T>, item: any): item is T => {
+  return arr.includes(item)
+}
+
+const handleOnClick = (dState: WritableDraft<GameState>, action: ActionsMapType['OnClick']) => {
+  const { game } = dState
+  const { tool, focusedObject: fo } = game
+
+  if (isIncluded(OBJECT_TOOL_TYPES, tool)) {
+    let { x, y } = gameCoordsToClampedObjectCoords(action.gameCoords)
+
+    const obj = ObjectFactory[tool](x, y, game.toolRotation)
+    dState.game.objects.push(obj)
+    return
+  }
+  if (fo && isIncluded(WIRE_TOOL_TYPES, tool)) {
+    const liveWire = game.toolObject as WireObjectType
+    const obj = game.objects.find(obj => obj.id === fo) as GameObjectType
+    const knobIndex = ObjectTypeSpecs[obj?.type].getKnobIndex(obj, action.gameCoords)
+
+    if (liveWire) {
+      const trg0 = liveWire.targets[0]
+      if (trg0.objectId === fo && trg0.knobIndex === knobIndex) return
+
+      liveWire.targets.push({ objectId: fo, knobIndex })
+      const existingIndex = game.wires.findIndex(w => matchWires(w, liveWire))
+      if (existingIndex > -1) {
+        game.wires.splice(existingIndex, 1)
+        game.toolObject = null
+        return
+      }
+      
+      game.wires.push(liveWire)
+    }
+    game.toolObject = WireFactory({
+      color: tool,
+      targets: [{ objectId: fo, knobIndex }],
+    })
+    return
+  }
 }
 
 export const _gameReducer = (state: GameState, action: GameActions) => {
@@ -45,19 +106,8 @@ export const _gameReducer = (state: GameState, action: GameActions) => {
       case 'hoverObject': dState.game.focusedObject = action.objId; return
       case 'selectTool': dState.game.tool = action.toolId; return
       case 'placeObject': dState.game.objects.push(tagObject(action.instance)); return
-      case 'zoom': {
-        const { dz, svgX, svgY } = action
-        const { view } = dState
-        const zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, state.view.zoom + dz))
-
-        const x = svgX - (svgX - view.x) * zoom / view.zoom
-        const y = svgY - (svgY - view.y) * zoom / view.zoom
-
-        view.x = x
-        view.y = y
-        view.zoom = zoom
-        return
-      }
+      case 'zoom': handleZoom(dState, action); return
+      case 'onClick': handleOnClick(dState, action); return
     }
   })
 }

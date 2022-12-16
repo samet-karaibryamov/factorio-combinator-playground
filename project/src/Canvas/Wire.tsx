@@ -1,4 +1,4 @@
-import { gameCoordsToSvgCoords } from './utils'
+import { gameCoordsToSvgCoords } from './mathUtils'
 
 const calcArcTip = (p1: Coords, p2: Coords): Coords => {
   const AMPLITUDE_COEF = 0.2
@@ -29,9 +29,11 @@ const calcArcTip = (p1: Coords, p2: Coords): Coords => {
 export const Wire = ({
   wire,
   state,
+  mouseCoords,
 }: {
   wire: WireObjectType
   state: GameState
+  mouseCoords?: Coords
 }) => {
   const colorName = wire.color === 'rw' ? 'red' : 'green'
   const anchors = wire.targets.map(t => {
@@ -45,6 +47,9 @@ export const Wire = ({
     }
     return gameCoordsToSvgCoords(knobCoords, state)
   })
+
+  if (!anchors[1]) anchors.push(mouseCoords as Coords)
+
   const arcTip = calcArcTip(anchors[0], anchors[1])
   const d = `M${anchors[0].x},${anchors[0].y} Q${arcTip.x},${arcTip.y} ${anchors[1].x},${anchors[1].y}`
   return <path d={d} fill="none" stroke={colorName} />

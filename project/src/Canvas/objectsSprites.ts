@@ -90,8 +90,8 @@ if (import.meta.env.DEV) {
   })
 }
 
-export const ObjectFactory = objectConstrainer({
-  CC: (x, y, r) => tagObject({
+export const ObjectFactory: Record<ObjectToolType, ObjectCreator> = {
+  cc: (x, y, r) => tagObject({
     x,
     y,
     rotation: r,
@@ -100,7 +100,7 @@ export const ObjectFactory = objectConstrainer({
     height: 1,
     sprite: ccSprite,
   }),
-  AC: (x, y, r) => tagObject({
+  ac: (x, y, r) => tagObject({
     x,
     y,
     rotation: r,
@@ -109,7 +109,7 @@ export const ObjectFactory = objectConstrainer({
     height: 2,
     sprite: acSprite,
   }),
-  DC: (x, y, r) => tagObject({
+  dc: (x, y, r) => tagObject({
     x,
     y,
     rotation: r,
@@ -118,33 +118,80 @@ export const ObjectFactory = objectConstrainer({
     height: 2,
     sprite: dcSprite,
   }),
-})
+}
 
 const getBBox = (obj: GameObjectType) => {
   const [hor, ver] = obj.rotation % 2
     ? [obj.height, obj.width]
     : [obj.width, obj.height]
-  return {
-    left: obj.x,
-    top: obj.y,
-    right: obj.x + hor * GRID_SQUARE_SIZE,
-    bottom: obj.y + ver * GRID_SQUARE_SIZE,
-    w: hor,
-    h: ver,
-  }
+
+  const left = obj.x
+  const top = obj.y
+  const w = hor * GRID_SQUARE_SIZE
+  const h = ver * GRID_SQUARE_SIZE
+
+  return { left, top, right: left + w, bottom: top + h, w, h }
 }
+
+const checkHit = (obj: GameObjectType, { x, y }: Coords) => {
+  const bbox = getBBox(obj)
+  return (
+    bbox.left <= x && x <= bbox.right &&
+    bbox.top <= y && y <= bbox.bottom
+  )
+}
+
+const getCombinatorKnobClickBoxes = (obj: GameObjectType) => {
+
+  const [dirX, dirY] = obj.rotation % 2 ? [1, 0] : [0, 1]
+  const isInverted = [1, 2].includes(obj.rotation)
+  const { knobs } = obj.sprite
+  const clickBoxes = knobs.map((k, i) => {
+    const offset = isInverted ? knobs.length - i - 1: i
+    const left = obj.x + offset * dirX * GRID_SQUARE_SIZE
+    const top = obj.y + offset * dirY * GRID_SQUARE_SIZE
+    const w = GRID_SQUARE_SIZE
+    const h = GRID_SQUARE_SIZE
+
+    return { left, top, right: left + w, bottom: top + h, w, h }
+  })
+  return clickBoxes
+}
+
+const getCombinatorKnobIndex = (obj: GameObjectType, gameCoord: Coords) => {
+  const { x, y } = gameCoord
+  return getCombinatorKnobClickBoxes(obj).findIndex(cbox => {
+    return (
+      cbox.left <= x && x <= cbox.right
+      && cbox.top <= y && y <= cbox.bottom
+    )
+  })
+}
+
 interface Specs {
-  getBBox: typeof getBBox
+  getBBox: typeof getBBox,
+  getKnobClickBoxes: typeof getCombinatorKnobClickBoxes,
+  checkHit: typeof checkHit,
+  getKnobIndex: typeof getCombinatorKnobIndex,
 }
 
 export const ObjectTypeSpecs: { [k in ObjectToolType]: Specs } = {
   ac: {
     getBBox,
+    checkHit,
+    getKnobClickBoxes: getCombinatorKnobClickBoxes,
+    getKnobIndex: getCombinatorKnobIndex,
   },
   dc: {
     getBBox,
+    checkHit,
+    getKnobClickBoxes: getCombinatorKnobClickBoxes,
+    getKnobIndex: getCombinatorKnobIndex,
   },
   cc: {
     getBBox,
+    checkHit,
+    getKnobClickBoxes: getCombinatorKnobClickBoxes,
+    getKnobIndex: getCombinatorKnobIndex,
   },
 }

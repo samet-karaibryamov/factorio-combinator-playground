@@ -1,4 +1,4 @@
-import { gameCoordsToSvgCoords } from './utils'
+import { gameCoordsToSvgCoords } from './mathUtils'
 
 const getDimensions = (
   obj: GameObjectType,

@@ -2,6 +2,7 @@ import { ObjectFactory } from 'Canvas/objectsSprites'
 import { WireFactory } from 'Canvas/wireFactory'
 import { Toolbar } from 'components/Toolbar'
 import { gameReducer } from 'gameReducer/gameReducer'
+import { pick } from 'lodash'
 import { useCallback, useEffect, useReducer } from 'react'
 import './App.css'
 import { Canvas } from './Canvas'
@@ -16,10 +17,10 @@ export const INITIAL_STATE: GameState = {
   },
   game: {
     objects: [
-      ObjectFactory.DC(120, 40, 0),
-      ObjectFactory.AC(160, 120, 1),
-      ObjectFactory.DC(120, 160, 2),
-      ObjectFactory.AC(40, 120, 3),
+      ObjectFactory.dc(120, 40, 0),
+      ObjectFactory.ac(160, 120, 1),
+      ObjectFactory.dc(120, 160, 2),
+      ObjectFactory.ac(40, 120, 3),
     ],
     wires: [],
     focusedObject: null,
@@ -96,6 +97,7 @@ function App() {
     onZoom,
     dispatch,
   } = useGameLoop()
+  const fo = state.game.objects.find(go => go.id === state.game.focusedObject)
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200 }}>
@@ -106,7 +108,7 @@ function App() {
         <h1>hi</h1>
         <div>{JSON.stringify(state.view)}</div>
         <div>{JSON.stringify(state.keyboard)}</div>
-        <div>Focused: {state.game.focusedObject}</div>
+        <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation'))}</div>
         <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
         <ShowGridToggle dispatch={dispatch} state={state} />
         <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>

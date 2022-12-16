@@ -54,10 +54,19 @@ export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapT
       }
       case 'KeyQ': {
         const { tool, objects: objs } = dState.game
-        if (tool || fo) {
+        if (tool) {
+          if (dState.game.toolObject) {
+            dState.game.toolObject = null
+          } else {
+            dState.game.tool = null
+          }
+          return
+        }
+        if (fo) {
           const obj = objs.find(o => o.id === fo) as GameObjectType
-          dState.game.tool = tool ? null : obj.type
+          dState.game.tool = obj.type
           dState.game.focusedObject = null
+          dState.game.toolRotation = obj.rotation
           return
         }
       }

@@ -1,3 +1,4 @@
+import { GRID_SQUARE_SIZE } from 'consts'
 
 export const clampNumberTo = (n: number, clamp: number) => {
   return (n % clamp + clamp) % clamp
@@ -29,4 +30,11 @@ export const gameCoordsToSvgCoords = (
     x: view.x + gameCoords.x * view.zoom,
     y: view.y + gameCoords.y * view.zoom,
   }
+}
+
+export const gameCoordsToClampedObjectCoords = (gameCoords: Coords): Coords => {
+  let { x, y } = gameCoords
+  x = Math.floor(x / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
+  y = Math.floor(y / GRID_SQUARE_SIZE) * GRID_SQUARE_SIZE
+  return { x, y }
 }
