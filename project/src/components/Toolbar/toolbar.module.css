@@ -1,21 +1,24 @@
 
 .toolbar {
-  display: flex;
+  display: inline-flex;
+  background-color: #242324;
+  padding: 3px;
+
   & > * {
     margin: 0.5px;
     background-color: #313131;
-    border-top: 1px solid #454545;
-    border-left: 1px solid #212121;
-    border-right: 1px solid #212121;
-    border-bottom: 1px solid #191919;
+    border: 1px solid;
+    border-color: #454545 #212121 #191919 #212121;
 
     display: inline-flex;
     position: relative;
     padding: 3px;
-    width: 32px;
-    height: 32px;
-    border: 1px solid #4B4543;
     cursor: pointer;
+
+    & img {
+      width: 32px;
+      height: 32px;
+    }
 
     &:hover, &.active {
       background-color: #e39827;

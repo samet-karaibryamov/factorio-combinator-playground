@@ -1,6 +1,7 @@
 import { ObjectFactory } from 'Canvas/objectsSprites'
 import { WireFactory } from 'Canvas/wireFactory'
 import { Toolbar } from 'components/Toolbar'
+import { Dialog } from 'Dialogs'
 import { gameReducer } from 'gameReducer/gameReducer'
 import { pick } from 'lodash'
 import { useCallback, useEffect, useReducer } from 'react'
@@ -111,7 +112,10 @@ function App() {
         <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation'))}</div>
         <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
         <ShowGridToggle dispatch={dispatch} state={state} />
-        <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
+        <div>
+          <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
+        </div>
+        <Dialog />
       </div>
     </div>
   )
