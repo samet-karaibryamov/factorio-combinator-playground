@@ -74,10 +74,10 @@ const ccSprite: GameObjectType['sprite'] = {
   rotationOffset: [{ x: -15.5, y: -6 }],
   knobs: [{
     rotations: [
-      { red: { x: 10, y: 0 }, green: { x: 0, y: 0 } },
-      { red: { x: 40, y: 0 }, green: { x: 0, y: 0 } },
-      { red: { x: 32, y: 30 }, green: { x: 0, y: 0 } },
-      { red: { x: 0, y: 19 }, green: { x: 0, y: 0 } }
+      { red: { x: 10, y: 0 }, green: { x: 29, y: -2.5 } },
+      { red: { x: 40, y: 0 }, green: { x: 40, y: 15 } },
+      { red: { x: 32, y: 30 }, green: { x: 12.5, y: 29 } },
+      { red: { x: 0, y: 19 }, green: { x: 1, y: 2 } },
     ]
   }]
 }
