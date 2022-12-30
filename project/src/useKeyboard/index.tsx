@@ -7,10 +7,9 @@ type KeyHandler = (ev: KeyboardEvent) => void
 type KeyHandlers = { keyDown?: KeyHandler, keyUp?: KeyHandler }
 
 const listeners: Record<any, KeyHandlers> = {}
-const activeIndices = new Set<number>()
 
 const callHandlers = (ev: KeyboardEvent, handlerType: keyof KeyHandlers) => {
-  const max = Math.max(...activeIndices)
+  const max = Math.max(...Object.keys(listeners).map(k => +k))
   let isPropagationStopped = false
   const sP = ev.stopPropagation
   ev.stopPropagation = () => {
@@ -60,15 +59,6 @@ export const useKeyboard = ({
 
 export const KeyboardCapture = (props: React.PropsWithChildren<{}>) => {
   const priority = useContext(KeyboardContext)
-
-  useEffect(() => {
-    const _p = priority
-    activeIndices.add(_p + 1)
-    return () => {
-      activeIndices.delete(_p + 1)
-    }
-  }, [priority])
-
   return (
     <KeyboardContext.Provider value={priority + 1}>
       {props.children}

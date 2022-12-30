@@ -104,32 +104,34 @@ function App() {
   // window.statez = state
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200 }}>
-      <div style={{ flexGrow: 0 }}>
-        <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
-      </div>
-      <div>
-        <h1>hi</h1>
-        <div>{JSON.stringify(state.view)}</div>
-        <div>{JSON.stringify(state.keyboard)}</div>
-        <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation'))}</div>
-        <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
-        <ShowGridToggle dispatch={dispatch} state={state} />
-        <div>
-          <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
+    <KeyboardCapture>
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200 }}>
+        <div style={{ flexGrow: 0 }}>
+          <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
-        {state.game.inspectedObject && (
-          <Dialog
-            onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
-            body={
-              <CCInspect
-                dispatch={dispatch}
-              />
-            }
-          />
-        )}
+        <div>
+          <h1>hi</h1>
+          <div>{JSON.stringify(state.view)}</div>
+          <div>{JSON.stringify(state.keyboard)}</div>
+          <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation'))}</div>
+          <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
+          <ShowGridToggle dispatch={dispatch} state={state} />
+          <div>
+            <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
+          </div>
+          {state.game.inspectedObject && (
+            <Dialog
+              onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+              body={
+                <CCInspect
+                  dispatch={dispatch}
+                />
+              }
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </KeyboardCapture>
   )
 }
 

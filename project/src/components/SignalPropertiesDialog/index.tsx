@@ -7,7 +7,7 @@ export const SignalPropertiesDialog = ({
   prototype: PrototypeName
 }) => {
   useKeyboard({
-    onKeyDown: (ev) => ev.stopPropagation()
+    // onKeyDown: (ev) => ev.stopPropagation()
   })
   return (
     <div>

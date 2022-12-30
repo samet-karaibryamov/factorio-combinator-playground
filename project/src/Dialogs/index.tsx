@@ -1,4 +1,4 @@
-import { KeyboardCapture } from 'useKeyboard'
+import { KeyboardCapture, useKeyboard } from 'useKeyboard'
 import styles from './dialog.module.css'
 import { usePointerDrag } from './usePointerDrag'
 
@@ -13,6 +13,14 @@ export const Dialog = ({
     coords,
     dragHandleProps,
   } = usePointerDrag({ x: 200, y: 200 })
+  useKeyboard({
+    onKeyDown: (ev) => {
+      if (ev.code == 'KeyE') {
+        ev.stopPropagation()
+        onClose()
+      }
+    }
+  })
 
   return (
     <KeyboardCapture>
