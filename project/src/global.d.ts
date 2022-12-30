@@ -1,5 +1,6 @@
 import { SpriteDef } from 'Canvas/objectsSprites'
 import { OBJECT_TOOL_TYPES, TOOL_TYPES, WIRE_TOOL_TYPES } from 'consts'
+import { PathsOfType } from 'tsUtils/PathsOfType'
 import { INITIAL_STATE } from './App'
 
 export {}
@@ -83,8 +84,12 @@ declare global {
       tool: ToolType | null
       toolRotation: ObjectRotation
       toolObject?: GameObjectType | WireObjectType | null
+      inspectedObject?: string | null
     }
     keyboard: KeyboardType
+    dialogStack: Array<{
+      props: any
+    }>
   }
 
   type WireToolType = (typeof WIRE_TOOL_TYPES)[number]
@@ -142,11 +147,15 @@ export interface ActionsMapType {
   }
   SetState: {
     type: 'setState'
-    path: string
+    path: PathsOfType<GameState, any>
     value: any
   }
   OnClick: {
     type: 'onClick'
     gameCoords: Coords
+  }
+  OpenDialog: {
+    type: 'openDialog'
+    props: any
   }
 }

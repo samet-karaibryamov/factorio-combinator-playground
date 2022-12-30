@@ -1,19 +1,15 @@
 import cn from 'classnames'
-import cc from 'assets/toolbar/Constant_combinator.png'
-import ac from 'assets/toolbar/Arithmetic_combinator.png'
-import dc from 'assets/toolbar/Decider_combinator.png'
-import rw from 'assets/toolbar/Red_wire.png'
-import gw from 'assets/toolbar/Green_wire.png'
 import styles from './toolbar.module.css'
 import React from 'react'
+import { ICONS_MAP } from 'assets/icons/index'
+import { Icon } from 'components/Icon'
 
-const ICON_MAP = { cc, ac, dc, rw, gw }
 const BUTTONS: [ToolType][] = [
-  ['rw'],
-  ['gw'],
-  ['cc'],
-  ['ac'],
-  ['dc'],
+  ['red-wire'],
+  ['green-wire'],
+  ['constant-combinator'],
+  ['arithmetic-combinator'],
+  ['decider-combinator'],
 ]
 
 export const Toolbar = (props: {
@@ -28,7 +24,7 @@ export const Toolbar = (props: {
           className={cn({ [styles.active]: toolId === props.currentTool })}
           onClick={() => props.dispatch({ type: 'selectTool', toolId })}
         >
-          <img src={ICON_MAP[toolId]} />
+          <Icon name={toolId} />
         </div>
       )}
     </div>

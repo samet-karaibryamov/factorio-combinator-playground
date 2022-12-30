@@ -91,29 +91,29 @@ if (import.meta.env.DEV) {
 }
 
 export const ObjectFactory: Record<ObjectToolType, ObjectCreator> = {
-  cc: (x, y, r) => tagObject({
+  'constant-combinator': (x, y, r) => tagObject({
     x,
     y,
     rotation: r,
-    type: 'cc',
+    type: 'constant-combinator',
     width: 1,
     height: 1,
     sprite: ccSprite,
   }),
-  ac: (x, y, r) => tagObject({
+  'arithmetic-combinator': (x, y, r) => tagObject({
     x,
     y,
     rotation: r,
-    type: 'ac',
+    type: 'arithmetic-combinator',
     width: 1,
     height: 2,
     sprite: acSprite,
   }),
-  dc: (x, y, r) => tagObject({
+  'decider-combinator': (x, y, r) => tagObject({
     x,
     y,
     rotation: r,
-    type: 'dc',
+    type: 'decider-combinator',
     width: 1,
     height: 2,
     sprite: dcSprite,
@@ -176,19 +176,19 @@ interface Specs {
 }
 
 export const ObjectTypeSpecs: { [k in ObjectToolType]: Specs } = {
-  ac: {
+  'arithmetic-combinator': {
     getBBox,
     checkHit,
     getKnobClickBoxes: getCombinatorKnobClickBoxes,
     getKnobIndex: getCombinatorKnobIndex,
   },
-  dc: {
+  'decider-combinator': {
     getBBox,
     checkHit,
     getKnobClickBoxes: getCombinatorKnobClickBoxes,
     getKnobIndex: getCombinatorKnobIndex,
   },
-  cc: {
+  'constant-combinator': {
     getBBox,
     checkHit,
     getKnobClickBoxes: getCombinatorKnobClickBoxes,

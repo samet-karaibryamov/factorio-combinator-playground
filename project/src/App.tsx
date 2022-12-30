@@ -1,10 +1,13 @@
 import { ObjectFactory } from 'Canvas/objectsSprites'
 import { WireFactory } from 'Canvas/wireFactory'
+import { CCInspect } from 'components/ObjectInspectUI'
 import { Toolbar } from 'components/Toolbar'
 import { Dialog } from 'Dialogs'
 import { gameReducer } from 'gameReducer/gameReducer'
 import { pick } from 'lodash'
 import { useCallback, useEffect, useReducer } from 'react'
+import { useKeyboard } from 'useKeyboard'
+import { KeyboardCapture } from 'useKeyboard'
 import './App.css'
 import { Canvas } from './Canvas'
 import { ShowGridToggle } from './components/ShowGridToggle'
@@ -18,10 +21,10 @@ export const INITIAL_STATE: GameState = {
   },
   game: {
     objects: [
-      ObjectFactory.dc(120, 40, 0),
-      ObjectFactory.ac(160, 120, 1),
-      ObjectFactory.dc(120, 160, 2),
-      ObjectFactory.ac(40, 120, 3),
+      ObjectFactory['decider-combinator'](120, 40, 0),
+      ObjectFactory['arithmetic-combinator'](160, 120, 1),
+      ObjectFactory['decider-combinator'](120, 160, 2),
+      ObjectFactory['arithmetic-combinator'](40, 120, 3),
     ],
     wires: [],
     focusedObject: null,
@@ -35,18 +38,19 @@ export const INITIAL_STATE: GameState = {
     right: false,
     shift: false,
   },
+  dialogStack: [],
 }
 
 const objs = INITIAL_STATE.game.objects
 INITIAL_STATE.game.wires.push(WireFactory({
-  color: 'gw',
+  color: 'green-wire',
   targets: [
     { objectId: objs[1].id, knobIndex: 1 },
     { objectId: objs[3].id, knobIndex: 0 },
   ]
 }))
 INITIAL_STATE.game.wires.push(WireFactory({
-  color: 'rw',
+  color: 'red-wire',
   targets: [
     { objectId: objs[1].id, knobIndex: 1 },
     { objectId: objs[3].id, knobIndex: 0 },
@@ -56,14 +60,14 @@ INITIAL_STATE.game.wires.push(WireFactory({
 const useGameLoop = () => {
   const [state, dispatch] = useReducer(gameReducer, INITIAL_STATE)
 
-  const keyDownHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keydown', code: ev.code, ev }) }, [])
-  const keyUpHandler = useCallback((ev: KeyboardEvent) => { dispatch({ type: 'keyup', code: ev.code, ev }) }, [])
   const onZoom = useCallback((zSpecs: ZoomSpecs) => { dispatch({ type: 'zoom', ...zSpecs }) }, [])
 
-  useEffect(() => {
-    document.addEventListener('keydown', keyDownHandler)
-    document.addEventListener('keyup', keyUpHandler)
+  useKeyboard({
+    onKeyDown: (ev: KeyboardEvent) => { dispatch({ type: 'keydown', code: ev.code, ev }) },
+    onKeyUp: (ev: KeyboardEvent) => { dispatch({ type: 'keyup', code: ev.code, ev }) },
+  })
 
+  useEffect(() => {
     let canceled = false
     let prevTime = 0
     const step: FrameRequestCallback = (time) => {
@@ -77,8 +81,6 @@ const useGameLoop = () => {
     requestAnimationFrame(step)
 
     return () => {
-      document.removeEventListener('keydown', keyDownHandler)
-      document.removeEventListener('keyup', keyUpHandler)
       canceled = true
     }
   }, [])
@@ -99,6 +101,7 @@ function App() {
     dispatch,
   } = useGameLoop()
   const fo = state.game.objects.find(go => go.id === state.game.focusedObject)
+  // window.statez = state
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200 }}>
@@ -115,7 +118,16 @@ function App() {
         <div>
           <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
         </div>
-        <Dialog />
+        {state.game.inspectedObject && (
+          <Dialog
+            onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+            body={
+              <CCInspect
+                dispatch={dispatch}
+              />
+            }
+          />
+        )}
       </div>
     </div>
   )

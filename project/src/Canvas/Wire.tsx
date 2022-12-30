@@ -35,7 +35,7 @@ export const Wire = ({
   state: GameState
   mouseCoords?: Coords
 }) => {
-  const colorName = wire.color === 'rw' ? 'red' : 'green'
+  const colorName = wire.color === 'red-wire' ? 'red' : 'green'
   const anchors = wire.targets.map(t => {
     const obj = state.game.objects.find(obj => obj.id === t.objectId)
     if (!obj) return { x: 0, y: 0 }

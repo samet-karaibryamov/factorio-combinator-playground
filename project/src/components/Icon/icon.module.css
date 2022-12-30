@@ -1,0 +1,20 @@
+
+.icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.icon img {
+  width: 32px;
+  height: 32px;
+}
+
+.subscript {
+  color: white;
+  position: absolute;
+  bottom: -5px;
+  right: -1px;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0px 0px 1px #000, 0px 0px 1px #000, 0px 0px 1px #000, 0px 0px 1px #000, 0px 0px 1px #000;
+}

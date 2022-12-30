@@ -52,7 +52,8 @@ const handleOnClick = (dState: WritableDraft<GameState>, action: ActionsMapType[
     dState.game.objects.push(obj)
     return
   }
-  if (fo && isIncluded(WIRE_TOOL_TYPES, tool)) {
+
+  if (isIncluded(WIRE_TOOL_TYPES, tool) && fo) {
     const liveWire = game.toolObject as WireObjectType
     const obj = game.objects.find(obj => obj.id === fo) as GameObjectType
     const knobIndex = ObjectTypeSpecs[obj?.type].getKnobIndex(obj, action.gameCoords)
@@ -76,6 +77,10 @@ const handleOnClick = (dState: WritableDraft<GameState>, action: ActionsMapType[
       targets: [{ objectId: fo, knobIndex }],
     })
     return
+  }
+
+  if (fo) {
+    dState.game.inspectedObject = fo
   }
 }
 

@@ -1,0 +1,25 @@
+
+.grid {
+  display: flex;
+  width: calc(8 * 42px + 2px);
+  padding: 1px;
+  flex-wrap: wrap;
+  background: #241f1e;
+
+  & > div {
+    width: 40px;
+    height: 40px;
+    background: #313131;
+    border-radius: 5px;
+    border: 1px solid;
+    border-color: #454545 #212121 #191919 #212121;
+    margin: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  & > div:hover {
+    background: #e39827;
+  }
+}

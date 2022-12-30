@@ -11,9 +11,9 @@ import { Wire } from './Wire'
 const VIEWBOX = { w: 600, h: 600 }
 
 const GHOSTS = {
-  cc: ObjectFactory.cc(0, 0, 0),
-  ac: ObjectFactory.ac(0, 0, 0),
-  dc: ObjectFactory.dc(0, 0, 0),
+  'constant-combinator': ObjectFactory['constant-combinator'](0, 0, 0),
+  'arithmetic-combinator': ObjectFactory['arithmetic-combinator'](0, 0, 0),
+  'decider-combinator': ObjectFactory['decider-combinator'](0, 0, 0),
 } as const
 
 const useToolObject = (state: GameState, mouseXY: Coords) => {
