@@ -1,7 +1,7 @@
 import { ObjectFactory } from 'objectSpecs'
 import { WireFactory } from 'Canvas/wireFactory'
 import { CCInspect } from 'components/ObjectInspectUI'
-import { Toolbar } from 'components/Toolbar'
+import { ItemSelectorGrid } from 'components/ItemSelectorGrid'
 import { Dialog } from 'Dialogs'
 import { gameReducer } from 'gameReducer/gameReducer'
 import { pick } from 'lodash'
@@ -117,10 +117,11 @@ function App() {
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
           <ShowGridToggle dispatch={dispatch} state={state} />
           <div>
-            <Toolbar currentTool={state.game.tool} dispatch={dispatch}/>
+            <ItemSelectorGrid value={state.game.tool} onChange={(toolId) => dispatch({ type: 'selectTool', toolId })}/>
           </div>
           {state.game.inspectedObject && (
             <Dialog
+              title="Constant Combinator"
               onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
               body={
                 <CCInspect

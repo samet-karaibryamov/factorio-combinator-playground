@@ -1,0 +1,34 @@
+
+.action-button {
+  position: relative;
+  border: none;
+  width: 1.5em;
+  height: 1.5em;
+  border-top: 1px solid #454545;
+  border-left: 1px solid #212121;
+  border-right: 1px solid #212121;
+  border-bottom: 1px solid #191919;
+  &:hover {
+    background-color: #e39827;
+  }
+  &:active {
+    background-color: #e8ac52;
+  }
+}
+
+.is-confirm-button {
+  background-color: #5eb663;
+}
+
+.is-tick-button:after {
+  content: ' ';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-70%) rotateZ(-45deg);
+  width: 1em;
+  height: 0.6em;
+  border: solid black;
+  border-width: 0 0 3px 3px;
+  font-size: 0.8em;
+}

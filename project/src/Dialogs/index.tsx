@@ -2,12 +2,10 @@ import { KeyboardCapture, useKeyboard } from 'useKeyboard'
 import styles from './dialog.module.css'
 import { usePointerDrag } from './usePointerDrag'
 
-export const Dialog = ({
-  onClose,
-  body,
-}: {
+export const Dialog = (props: {
   onClose: () => void
   body: JSX.Element
+  title?: string
 }) => {
   const {
     coords,
@@ -15,9 +13,9 @@ export const Dialog = ({
   } = usePointerDrag({ x: 200, y: 200 })
   useKeyboard({
     onKeyDown: (ev) => {
-      if (ev.code == 'KeyE') {
+      if (['KeyE', 'Escape'].includes(ev.code)) {
         ev.stopPropagation()
-        onClose()
+        props.onClose()
       }
     }
   })
@@ -26,14 +24,14 @@ export const Dialog = ({
     <KeyboardCapture>
       <div className={styles.root} style={{ top: coords.y, left: coords.x }}>
         <div className={styles.header}>
-          <div className={styles.title}>Constant combinator</div>
+          <div className={styles.title}>{props.title || ''}</div>
           <div className={styles.handle} {...dragHandleProps} />
           <div className={styles.closeButton}>
-            <button onClick={onClose}><span>×</span></button>
+            <button onClick={props.onClose}><span>×</span></button>
           </div>
         </div>
         <div className={styles.body}>
-          {body}
+          {props.body}
         </div>
       </div>
     </KeyboardCapture>

@@ -1,14 +1,10 @@
 import { Dialog } from 'Dialogs'
-import { SignalGrid } from '../SignalGrid'
+import { Signal, SignalGrid } from '../SignalGrid'
 import { useState } from 'react'
 import { SignalPropertiesDialog } from 'components/SignalPropertiesDialog'
 
 type CProps = {
-  signals: Array<{
-    prototype: ToolType
-    index: number
-    amount: number
-  }>
+  signals: Signal[]
 }
 
 const propz: CProps = {
@@ -41,16 +37,30 @@ export const CCInspect = ({
         setSelectedIndex(i)
       }}
     />
-    {selectedIndex > -1 &&
-      <Dialog
-        onClose={() => setSelectedIndex(-1)}
-        body={
-          <SignalPropertiesDialog
-            prototype={prototype}
-            onSubmit={(signal) => {}}
-          />
-        }
-      />
-    }
+    {(() => {
+      if (selectedIndex < 0) return null
+
+      const signal = propz.signals.find(s => s.index === selectedIndex)
+      return (
+        <Dialog
+          onClose={() => setSelectedIndex(-1)}
+          body={
+            <SignalPropertiesDialog
+              prototype={signal?.prototype}
+              amount={signal?.amount}
+              onSubmit={({ amount, item }) => {
+                const newSignal = signal || {} as Signal
+                if (!signal) propz.signals.push(newSignal)
+
+                newSignal.index = selectedIndex
+                newSignal.amount = amount
+                newSignal.prototype = item as ToolType
+                setSelectedIndex(-1)
+              }}
+            />
+          }
+        />
+      )
+    })()}
   </>
 }

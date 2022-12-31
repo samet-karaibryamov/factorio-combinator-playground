@@ -9,6 +9,8 @@ type KeyHandlers = { keyDown?: KeyHandler, keyUp?: KeyHandler }
 const listeners: Record<any, KeyHandlers> = {}
 
 const callHandlers = (ev: KeyboardEvent, handlerType: keyof KeyHandlers) => {
+  if ((ev.target as HTMLElement).tagName === 'INPUT') return
+
   const max = Math.max(...Object.keys(listeners).map(k => +k))
   let isPropagationStopped = false
   const sP = ev.stopPropagation

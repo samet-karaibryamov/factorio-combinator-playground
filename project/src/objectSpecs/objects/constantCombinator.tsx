@@ -20,10 +20,10 @@ export const constantCombinator = {
   icon: iconUrl,
   placeable: {
     behaviour: DEFAULT_BEHAVIOUR,
-    base: {
+    base: () => ({
       width: 1,
       height: 1,
       sprite: SPRITE,
-    },
+    }),
   },
 } as const

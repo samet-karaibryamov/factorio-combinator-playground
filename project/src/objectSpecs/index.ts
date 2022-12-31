@@ -47,7 +47,7 @@ export const ObjectFactory = mapValues(PLACEABLE_OBJECT_SPECS, (specs, key) => {
     y,
     rotation: r,
     type: key as keyof typeof PLACEABLE_OBJECT_SPECS,
-    ...specs.placeable.base,
+    ...specs.placeable.base(),
   })
 
   return res

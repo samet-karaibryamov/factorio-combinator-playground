@@ -34,10 +34,10 @@ export const deciderCombinator = {
   icon: iconUrl,
   placeable: {
     behaviour: DEFAULT_BEHAVIOUR,
-    base: {
+    base: () => ({
       width: 1,
       height: 2,
       sprite: SPRITE,
-    },
+    }),
   },
 } as const
