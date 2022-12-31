@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import styles from './toolbar.module.css'
 import React from 'react'
-import { ICONS_MAP } from 'assets/icons/index'
 import { Icon } from 'components/Icon'
 
 const BUTTONS: [ToolType][] = [

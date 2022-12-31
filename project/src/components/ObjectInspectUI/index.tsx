@@ -1,6 +1,3 @@
-import { times } from 'lodash'
-import { PrototypeName } from 'assets/icons'
-import { Icon } from 'components/Icon'
 import { Dialog } from 'Dialogs'
 import { SignalGrid } from '../SignalGrid'
 import { useState } from 'react'
@@ -8,7 +5,7 @@ import { SignalPropertiesDialog } from 'components/SignalPropertiesDialog'
 
 type CProps = {
   signals: Array<{
-    prototype: PrototypeName
+    prototype: ToolType
     index: number
     amount: number
   }>
@@ -35,6 +32,7 @@ export const CCInspect = ({
   dispatch: React.Dispatch<GameActions>
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [prototype, setPrototype] = useState<ToolType>('constant-combinator')
 
   return <>
     <SignalGrid
@@ -47,7 +45,10 @@ export const CCInspect = ({
       <Dialog
         onClose={() => setSelectedIndex(-1)}
         body={
-          <SignalPropertiesDialog prototype="constant-combinator" />
+          <SignalPropertiesDialog
+            prototype={prototype}
+            onSubmit={(signal) => {}}
+          />
         }
       />
     }

@@ -1,10 +1,9 @@
-import { PrototypeName } from 'assets/icons'
 import { Icon } from 'components/Icon'
 import { times } from 'lodash'
 import styles from './styles.module.css'
 
 export type Signal = {
-  prototype: PrototypeName
+  prototype: ToolType
   index: number
   amount: number
 }

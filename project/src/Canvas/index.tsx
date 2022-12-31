@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Focus } from './Focus'
 import { GameObject } from './GameObject'
 import { clampNumberTo, gameCoordsToClampedObjectCoords, getSvgCoords, svgCoordsToGameCoords } from './mathUtils'
-import { ObjectFactory, ObjectTypeSpecs } from './objectsSprites'
+import { ObjectFactory, PLACEABLE_OBJECT_SPECS } from 'objectSpecs'
 import { GRID_SQUARE_SIZE } from 'consts'
 import { Wire } from './Wire'
 
@@ -84,7 +84,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
 
           // FOCUS OBJECT
           const gameCoords = svgCoordsToGameCoords(svgCoords, state)
-          const obj = state.game.objects.find(obj => ObjectTypeSpecs[obj.type].checkHit(obj, gameCoords))
+          const obj = state.game.objects.find(obj => PLACEABLE_OBJECT_SPECS[obj.type].placeable.behaviour.checkHit(obj, gameCoords))
           if (obj?.id !== state.game.focusedObject && !ghost) {
             dispatch({ type: 'hoverObject', objId: obj?.id })
           }

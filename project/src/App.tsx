@@ -1,4 +1,4 @@
-import { ObjectFactory } from 'Canvas/objectsSprites'
+import { ObjectFactory } from 'objectSpecs'
 import { WireFactory } from 'Canvas/wireFactory'
 import { CCInspect } from 'components/ObjectInspectUI'
 import { Toolbar } from 'components/Toolbar'

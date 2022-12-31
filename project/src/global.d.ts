@@ -1,5 +1,4 @@
-import { SpriteDef } from 'Canvas/objectsSprites'
-import { OBJECT_TOOL_TYPES, TOOL_TYPES, WIRE_TOOL_TYPES } from 'consts'
+import { OBJECT_SPECS, PLACEABLE_OBJECT_SPECS, WIRE_SPECS } from 'objectSpecs'
 import { PathsOfType } from 'tsUtils/PathsOfType'
 import { INITIAL_STATE } from './App'
 
@@ -55,7 +54,7 @@ declare global {
 
   type WireObjectType = {
     id: string
-    color: (typeof WIRE_TOOL_TYPES)[number]
+    color: WireToolType
     targets: Array<{
       objectId: string
       knobIndex: number
@@ -92,9 +91,9 @@ declare global {
     }>
   }
 
-  type WireToolType = (typeof WIRE_TOOL_TYPES)[number]
-  type ObjectToolType = (typeof OBJECT_TOOL_TYPES)[number]
-  type ToolType = (typeof TOOL_TYPES)[number]
+  type WireToolType = keyof typeof WIRE_SPECS
+  type ObjectToolType = keyof typeof PLACEABLE_OBJECT_SPECS
+  type ToolType = keyof typeof OBJECT_SPECS
 
   interface ZoomSpecs {
     dz: number

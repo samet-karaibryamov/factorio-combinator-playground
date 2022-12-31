@@ -1,7 +1,6 @@
-import { ObjectFactory, ObjectTypeSpecs, tagObject } from 'Canvas/objectsSprites'
+import { ObjectFactory, PLACEABLE_OBJECT_SPECS, tagObject, WIRE_SPECS } from 'objectSpecs'
 import { gameCoordsToClampedObjectCoords } from 'Canvas/mathUtils'
 import { WireFactory } from 'Canvas/wireFactory'
-import { OBJECT_TOOL_TYPES, WIRE_TOOL_TYPES } from 'consts'
 import { ActionsMapType } from 'global'
 import produce, { setAutoFreeze } from 'immer'
 import { WritableDraft } from 'immer/dist/internal'
@@ -37,15 +36,15 @@ const handleZoom = (dState: WritableDraft<GameState>, action: ActionsMapType['Zo
   view.zoom = zoom
 }
 
-const isIncluded = <T,>(arr: ReadonlyArray<T>, item: any): item is T => {
-  return arr.includes(item)
+const isIn = <T extends object,>(obj: T, item: any): item is keyof T => {
+  return item in obj
 }
 
 const handleOnClick = (dState: WritableDraft<GameState>, action: ActionsMapType['OnClick']) => {
   const { game } = dState
   const { tool, focusedObject: fo } = game
 
-  if (isIncluded(OBJECT_TOOL_TYPES, tool)) {
+  if (isIn(PLACEABLE_OBJECT_SPECS, tool)) {
     let { x, y } = gameCoordsToClampedObjectCoords(action.gameCoords)
 
     const obj = ObjectFactory[tool](x, y, game.toolRotation)
@@ -53,10 +52,10 @@ const handleOnClick = (dState: WritableDraft<GameState>, action: ActionsMapType[
     return
   }
 
-  if (isIncluded(WIRE_TOOL_TYPES, tool) && fo) {
+  if (isIn(WIRE_SPECS, tool) && fo) {
     const liveWire = game.toolObject as WireObjectType
     const obj = game.objects.find(obj => obj.id === fo) as GameObjectType
-    const knobIndex = ObjectTypeSpecs[obj?.type].getKnobIndex(obj, action.gameCoords)
+    const knobIndex = PLACEABLE_OBJECT_SPECS[obj?.type].placeable.behaviour.getKnobIndex(obj, action.gameCoords)
 
     if (liveWire) {
       const trg0 = liveWire.targets[0]
