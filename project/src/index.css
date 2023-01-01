@@ -15,3 +15,11 @@ code {
 *, *:after, *:before {
   box-sizing: border-box;
 }
+
+.btn:hover, .btn.active {
+  background-color: #e39827;
+}
+
+.btn:active {
+  background-color: #e8ac52;
+}

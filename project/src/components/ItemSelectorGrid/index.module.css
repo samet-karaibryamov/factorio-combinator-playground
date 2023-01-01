@@ -19,9 +19,5 @@
       width: 32px;
       height: 32px;
     }
-
-    &:hover, &.active {
-      background-color: #e39827;
-    }
   }
 }

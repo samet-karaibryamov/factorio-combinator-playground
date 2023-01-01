@@ -19,7 +19,7 @@ export const ItemSelectorGrid = (props: {
       {BUTTONS.map(([toolId], i) =>
         <div
           key={i}
-          className={cn({ [styles.active]: toolId === props.value })}
+          className={cn('btn', { active: toolId === props.value })}
           onClick={() => props.onChange(toolId)}
         >
           <Icon name={toolId} />

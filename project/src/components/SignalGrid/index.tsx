@@ -20,7 +20,11 @@ export const SignalGrid = ({
       {times(32, (i) => {
         const signal = signals.find(s => s.index === i)
         return (
-          <div key={i} onClick={() => onSelect(i)}>
+          <div
+            key={i}
+            onClick={() => onSelect(i)}
+            className="btn"
+          >
             {signal &&
               <Icon name={signal.prototype} subscript={signal.amount} />
             }

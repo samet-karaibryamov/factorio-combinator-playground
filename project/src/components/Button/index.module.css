@@ -8,12 +8,6 @@
   border-left: 1px solid #212121;
   border-right: 1px solid #212121;
   border-bottom: 1px solid #191919;
-  &:hover {
-    background-color: #e39827;
-  }
-  &:active {
-    background-color: #e8ac52;
-  }
 }
 
 .is-confirm-button {

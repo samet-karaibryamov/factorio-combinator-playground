@@ -10,7 +10,7 @@ export const Button = ({
   isTick?: boolean
   isConfirm?: boolean
 }>) => {
-  const cName = cn(rest.className, style['action-button'], {
+  const cName = cn('btn', rest.className, style['action-button'], {
     [style['is-tick-button']]: isTick,
     [style['is-confirm-button']]: isConfirm,
   })
