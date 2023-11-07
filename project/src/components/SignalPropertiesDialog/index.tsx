@@ -5,27 +5,68 @@ import { useRef, useState } from 'react'
 import { useKeyboard } from 'useKeyboard'
 import styles from './index.module.css'
 
-export const SignalPropertiesDialog = (props: {
-  prototype?: ToolType | null
-  amount?: number | null
-  onSubmit: (p: { amount: number, item?: ToolType | null }) => void
-  allowConstant?: boolean
-}) => {
+type CombinedModeProps = {
+  mode: 'combined'
+  onSubmit: (p: { amount: number, item: ToolType }) => void
+} & (
+  | { prototype: ToolType, amount: number }
+  | { prototype: null, amount: null }
+)
+
+type EitherOrModeProps = {
+  mode: 'either-or'
+  onSubmit: (p: { amount: number } | { item: ToolType }) => void
+} & (
+  | { prototype: ToolType, amount: null }
+  | { prototype: null, amount: number }
+  | { prototype: null, amount: null }
+)
+
+export type SignalPropertiesDialogProps =
+  | {
+    mode: 'item-only'
+    prototype: ToolType | null
+    onSubmit: (p: { item: ToolType }) => void
+  }
+  | CombinedModeProps
+  | EitherOrModeProps
+
+export const SignalPropertiesDialog = (props: SignalPropertiesDialogProps) => {
   const [prototype, setPrototype] = useState(props.prototype)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit = () => {
-    props.onSubmit({
-      amount: Number(inputRef.current?.value),
-      item: prototype,
-    })
+  const handleSubmit = (reason: 'submit' | 'item-click', _prototype?: typeof props.prototype) => {
+    if (props.mode === 'combined') {
+      if (!prototype) throw new Error('Prototype null')
+
+      props.onSubmit({
+        amount: Number(inputRef.current?.value) || 0,
+        item: prototype,
+      })
+    } else if (props.mode === 'either-or') {
+      if (reason === 'submit') {
+        props.onSubmit({ amount: Number(inputRef.current?.value) || 0 })
+      } else {
+        if (!_prototype) throw new Error('Prototype null')
+
+        props.onSubmit({ item: _prototype })
+      }
+    } else if (props.mode === 'item-only') {
+      if (!_prototype) throw new Error('Prototype null')
+
+      props.onSubmit({ item: _prototype })
+    }
   }
 
   useKeyboard({
+    debugValue: 'SignalPropertiesDialog',
     onKeyDown: (ev) => {
-      if (ev.code === 'KeyE') {
-        ev.stopPropagation()
-        handleSubmit()
+      switch (ev.code) {
+        case 'Enter':
+        case 'KeyE': {
+          ev.stopPropagation()
+          handleSubmit('submit')
+        }
       }
     }
   })
@@ -34,19 +75,34 @@ export const SignalPropertiesDialog = (props: {
     <Row column between>
       <ItemSelectorGrid
         value={prototype}
-        onChange={(value) => setPrototype(value)}
+        onChange={(value) => {
+          if (props.mode !== 'combined') {
+            handleSubmit('item-click', value)
+            return
+          }
+          setPrototype(value)
+        }}
       />
       <Row end gap={5} style={{ padding: 5 }}>
-        <input
-          ref={inputRef}
-          type="text"
-          defaultValue={props.amount || ''}
-          className={styles.input}
-        />
+        {props.mode !== 'item-only' &&
+          <input
+            ref={inputRef}
+            type="text"
+            defaultValue={props.amount || '0'}
+            className={styles.input}
+            onKeyDown={(ev) => {
+              switch (ev.code) {
+                case 'Enter':
+                case 'Escape': break
+                default: ev.stopPropagation()
+              }
+            }}
+          />
+        }
         <Button
           isTick
           isConfirm
-          onClick={handleSubmit}
+          onClick={() => handleSubmit('submit')}
         />
       </Row>
     </Row>

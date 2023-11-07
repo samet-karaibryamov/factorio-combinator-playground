@@ -1,34 +1,43 @@
-import { Icon } from 'components/Icon'
 import { times } from 'lodash'
 import styles from './styles.module.css'
+import { SignalSelectorButton } from 'components/SignalSelectorButton'
 
 export type Signal = {
   prototype: ToolType
-  index: number
+  index?: number
   amount: number
 }
 
 export const SignalGrid = ({
   signals,
-  onSelect,
+  onSubmit,
+  onClear,
 }: {
   signals: Signal[]
-  onSelect: (index: number) => void
+  onSubmit: (signals: Signal[]) => void
+  onClear: (index: number) => void
 }) => {
   return (
     <div className={styles.grid}>
       {times(32, (i) => {
-        const signal = signals.find(s => s.index === i)
+        const sgn = signals.find(s => s.index === i)
+
         return (
-          <div
-            key={i}
-            onClick={() => onSelect(i)}
-            className="btn"
-          >
-            {signal &&
-              <Icon name={signal.prototype} subscript={signal.amount} />
-            }
-          </div>
+          <SignalSelectorButton
+            mode="combined"
+            {...(sgn ? sgn : { amount: null, prototype: null })}
+            onClear={() => onClear(i)}
+            onSubmit={({ amount, item }) => {
+              let newSignals
+              const newSignal = { amount, prototype: item, index: i } as Signal
+              if (sgn) {
+                newSignals = signals.map(_sgn => _sgn.index === i ? newSignal : _sgn)
+              } else {
+                newSignals = [...signals, newSignal]
+              }
+              onSubmit(newSignals)
+            }}
+          />
         )
       })}
     </div>

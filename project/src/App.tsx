@@ -1,6 +1,6 @@
 import { ObjectFactory } from 'objectSpecs'
 import { WireFactory } from 'Canvas/wireFactory'
-import { CCInspect } from 'components/ObjectInspectUI'
+import { CCInspect } from 'components/inspectors/CCInspect'
 import { ItemSelectorGrid } from 'components/ItemSelectorGrid'
 import { Dialog } from 'Dialogs'
 import { gameReducer } from 'gameReducer/gameReducer'
@@ -11,6 +11,9 @@ import { KeyboardCapture } from 'useKeyboard'
 import './App.css'
 import { Canvas } from './Canvas'
 import { ShowGridToggle } from './components/ShowGridToggle'
+import { CCGameObjectType } from 'objectSpecs/objects/constantCombinator'
+import { ACInspect } from 'components/inspectors/ACInspect'
+import { ACGameObjectType } from 'objectSpecs/objects/arithmeticCombinator'
 
 export const INITIAL_STATE: GameState = {
   view: {
@@ -101,6 +104,7 @@ function App() {
     dispatch,
   } = useGameLoop()
   const fo = state.game.objects.find(go => go.id === state.game.focusedObject)
+  const io = state.game.objects.find(go => go.id === state.game.inspectedObject)
   // window.statez = state
 
   return (
@@ -119,13 +123,36 @@ function App() {
           <div>
             <ItemSelectorGrid value={state.game.tool} onChange={(toolId) => dispatch({ type: 'selectTool', toolId })}/>
           </div>
-          {state.game.inspectedObject && (
+          {io?.type === 'constant-combinator' && (
             <Dialog
               title="Constant Combinator"
               onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
               body={
                 <CCInspect
-                  dispatch={dispatch}
+                  obj={io as CCGameObjectType}
+                  onSubmit={(partial) => {
+                    dispatch({
+                      type: 'updateObject',
+                      partial: partial as GameObjectType,
+                    })
+                  }}
+                />
+              }
+            />
+          )}
+          {io?.type === 'arithmetic-combinator' && (
+            <Dialog
+              title="Arithmetic Combinator"
+              onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+              body={
+                <ACInspect
+                  obj={io as ACGameObjectType}
+                  onSubmit={(partial) => {
+                    dispatch({
+                      type: 'updateObject',
+                      partial: partial as GameObjectType,
+                    })
+                  }}
                 />
               }
             />

@@ -16,6 +16,12 @@ code {
   box-sizing: border-box;
 }
 
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .btn:hover, .btn.active {
   background-color: #e39827;
 }

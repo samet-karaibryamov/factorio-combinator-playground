@@ -15,12 +15,10 @@ type DeepMerge<T, U> = U extends Primitive
     }, never>
   )
 
-type PartialPartial<T, Keys extends keyof T> = Omit<
-{ [P in keyof T]?: T[P] }
-& { [P in keyof T]?: T[P] }
-, never>
-
 declare global {
+  type Id<T> = {} & { [K in keyof T]: T[K] }
+  type NullPartial<T, K extends keyof T = keyof T> = { [P in K]?: T[P] | null } & Omit<T, K>
+
   type Coords = { x: number, y: number }
 
   type ObjectRotation = 0 | 1 | 2 | 3
@@ -156,5 +154,9 @@ export interface ActionsMapType {
   OpenDialog: {
     type: 'openDialog'
     props: any
+  }
+  UpdateObject: {
+    type: 'updateObject'
+    partial: Partial<GameObjectType> & Pick<GameObjectType, 'id'>
   }
 }

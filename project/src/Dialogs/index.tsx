@@ -12,8 +12,9 @@ export const Dialog = (props: {
     dragHandleProps,
   } = usePointerDrag({ x: 200, y: 200 })
   useKeyboard({
+    debugValue: 'Dlg',
     onKeyDown: (ev) => {
-      if (['KeyE', 'Escape'].includes(ev.code)) {
+      if (['KeyE', 'Enter', 'Escape'].includes(ev.code)) {
         ev.stopPropagation()
         props.onClose()
       }

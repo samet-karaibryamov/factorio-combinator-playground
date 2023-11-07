@@ -38,6 +38,27 @@ export const arithmeticCombinator = {
       width: 1,
       height: 2,
       sprite: SPRITE,
+      circuit: {
+        leftSignal: null,
+        oper: '+',
+        rightSignal: null,
+        returnSignal: null,
+      } as ACCircuitProps
     }),
   },
 } as const
+
+
+export type ACInputSignalType = 
+  | { amount: number, prototype?: ToolType | null }
+  | { amount?: number | null, prototype: ToolType }
+  | null
+
+export type ACCircuitProps = {
+  leftSignal?: ACInputSignalType
+  oper: string
+  rightSignal?: ACInputSignalType
+  returnSignal?: ToolType | null
+}
+
+export type ACGameObjectType = GameObjectType & { circuit: ACCircuitProps }

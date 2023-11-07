@@ -1,5 +1,4 @@
-import { times } from 'lodash'
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useDebugValue, useEffect, useRef } from 'react'
 
 export const KeyboardContext = React.createContext(0)
 
@@ -9,8 +8,6 @@ type KeyHandlers = { keyDown?: KeyHandler, keyUp?: KeyHandler }
 const listeners: Record<any, KeyHandlers> = {}
 
 const callHandlers = (ev: KeyboardEvent, handlerType: keyof KeyHandlers) => {
-  if ((ev.target as HTMLElement).tagName === 'INPUT') return
-
   const max = Math.max(...Object.keys(listeners).map(k => +k))
   let isPropagationStopped = false
   const sP = ev.stopPropagation
@@ -30,12 +27,15 @@ window.addEventListener('keyup', (ev) => callHandlers(ev, 'keyUp'))
 export const useKeyboard = ({
   onKeyDown,
   onKeyUp,
+  debugValue,
 }: {
   onKeyDown?: KeyHandler
   onKeyUp?: KeyHandler
+  debugValue?: string
 }) => {
   const kbPriority = useContext(KeyboardContext)
   const keyHandlersRef = useRef({ onKeyDown, onKeyUp })
+  useDebugValue(`useKeyboard[${kbPriority}]: ${debugValue || ''}`)
 
   useEffect(() => {
     keyHandlersRef.current = { onKeyDown, onKeyUp }
@@ -45,7 +45,7 @@ export const useKeyboard = ({
     const priority = kbPriority
 
     if (listeners[priority]) {
-      console.error('Duplicate keyboard priority ', priority)
+      console.error('Duplicate keyboard priority ', priority, debugValue)
     }
 
     listeners[priority] = {

@@ -3,15 +3,22 @@ import styles from './icon.module.css'
 
 export const Icon = ({
   name,
-  subscript,
+  amount,
 }: {
-  name: ToolType
-  subscript?: string | number
+  name?: ToolType | null
+  amount?: string | number | null
 }) => {
+  const hasAmount = amount || amount === 0
+
   return (
     <div className={styles.icon}>
-      <img src={OBJECT_SPECS[name].icon} />
-      {(subscript || subscript === 0) && <div className={styles.subscript}>{subscript}</div>}
+      {name
+        ? (<>
+          <img src={name && OBJECT_SPECS[name].icon} />
+          {hasAmount && <div className={styles.amount}>{amount}</div>}
+        </>)
+        : (hasAmount && <div className={styles.text}>{amount}</div>)
+      }
     </div>
   )
 }

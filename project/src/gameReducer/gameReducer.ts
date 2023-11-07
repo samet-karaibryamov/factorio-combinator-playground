@@ -112,6 +112,15 @@ export const _gameReducer = (state: GameState, action: GameActions) => {
       case 'placeObject': dState.game.objects.push(tagObject(action.instance)); return
       case 'zoom': handleZoom(dState, action); return
       case 'onClick': handleOnClick(dState, action); return
+      case 'updateObject': {
+        const obj = dState.game.objects.find(obj => obj.id === action.partial.id)
+        if (!obj) {
+          console.error('Object not found!', action)
+          break
+        }
+        Object.assign(obj, action.partial)
+        break
+      }
     }
   })
 }

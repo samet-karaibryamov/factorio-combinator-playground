@@ -1,0 +1,28 @@
+
+.root {
+  color: white;
+  font-weight: 600;
+  font-size: 0.8em;
+  padding: 10px;
+
+  & > hr {
+    border-color: #454545 #212121 #191919 #212121;
+  }
+
+  & label {
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+
+.row1 {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  & select {
+    background: #8e8e8e;
+    width: 40px;
+    text-align: center;
+  }
+}
