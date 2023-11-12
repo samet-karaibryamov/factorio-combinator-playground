@@ -150,7 +150,7 @@ function App() {
                   onSubmit={(partial) => {
                     dispatch({
                       type: 'updateObject',
-                      partial: partial as GameObjectType,
+                      partial: partial,
                     })
                   }}
                 />

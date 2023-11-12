@@ -157,6 +157,6 @@ export interface ActionsMapType {
   }
   UpdateObject: {
     type: 'updateObject'
-    partial: Partial<GameObjectType> & Pick<GameObjectType, 'id'>
+    partial: Id<Partial<GameObjectType> & Pick<GameObjectType, 'id'>>
   }
 }
