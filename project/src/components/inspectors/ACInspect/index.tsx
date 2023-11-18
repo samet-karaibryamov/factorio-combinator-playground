@@ -1,4 +1,3 @@
-import { ChangeEvent, useState } from 'react'
 import { KeyboardCapture, useKeyboard } from 'useKeyboard'
 import { ACGameObjectType, ACInputSignalType } from 'objectSpecs/objects/arithmeticCombinator'
 import { SignalSelectorButton } from 'components/SignalSelectorButton'
@@ -39,57 +38,46 @@ export const ACInspect = ({
   onSubmit: (partial: Pick<ACGameObjectType, 'id' | 'circuit'>) => void
   obj: ACGameObjectType
 }) => {
-  const [circuit, setCircuit] = useState(obj.circuit)
+  useKeyboard({
+    debugValue: 'ACInspect',
+  })
 
-  const onChange = (ev: ChangeEvent<{ name: string, value: string }>) => {
-    const { name, value } = ev.target
-    setCircuit({
-      ...circuit,
-      [name]: value,
+  const onChange = (circuit: Partial<typeof obj.circuit>) => {
+    onSubmit({
+      id: obj.id,
+      circuit: {
+        ...obj.circuit,
+        ...circuit,
+      },
     })
   }
 
-  useKeyboard({
-    debugValue: 'ACInspect',
-    onKeyDown: (ev) => {
-      if (ev.code === 'KeyE') {
-        onSubmit({
-          id: obj.id,
-          circuit,
-        })
-      }
-    },
-  })
-
-  const lSgn = circuit.leftSignal
   return <>
     <KeyboardCapture>
       <div className={styles.root}>
         <label>Input</label>
         <div className={styles.row1}>
           <InputSignalSelectorButton
-            sgn={circuit.leftSignal}
-            onChange={(newSignal) => setCircuit(c => ({ ...c, leftSignal: newSignal }))}
+            sgn={obj.circuit.leftSignal}
+            onChange={(newSignal) => onChange({ leftSignal: newSignal })}
           />
           <select
-            value={circuit.oper}
-            onChange={(ev) => setCircuit(c => ({ ...c, oper: ev.target.value }))}
+            value={obj.circuit.oper}
+            onChange={(ev) => onChange({ oper: ev.target.value })}
           >
             {['+', '-', '*', '/'].map(oper => <option key={oper} value={oper}>{oper}</option>)}
           </select>
           <InputSignalSelectorButton
-            sgn={circuit.rightSignal}
-            onChange={(newSignal) => setCircuit(c => ({ ...c, rightSignal: newSignal }))}
+            sgn={obj.circuit.rightSignal}
+            onChange={(newSignal) => onChange({ rightSignal: newSignal })}
           />
         </div>
         <hr />
         <label>Output</label>
         <SignalSelectorButton
           mode="item-only"
-          prototype={circuit.returnSignal ?? null}
-          onSubmit={(signal) => {
-            setCircuit(c => ({ ...c, returnSignal: signal.item }))
-          }}
+          prototype={obj.circuit.returnSignal ?? null}
+          onSubmit={(signal) => onChange({ returnSignal: signal.item })}
         />
       </div>
     </KeyboardCapture>
