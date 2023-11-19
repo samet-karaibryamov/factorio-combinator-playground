@@ -49,6 +49,7 @@ const getCombinatorKnobIndex = (obj: GameObjectType, gameCoord: Coords) => {
 }
 
 export const DEFAULT_BEHAVIOUR = {
+  displayArrows: false,
   getBBox,
   checkHit,
   getKnobClickBoxes: getCombinatorKnobClickBoxes,

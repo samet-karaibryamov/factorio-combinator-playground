@@ -33,7 +33,10 @@ const SPRITE: GameObjectType['sprite'] = {
 export const deciderCombinator = {
   icon: iconUrl,
   placeable: {
-    behaviour: DEFAULT_BEHAVIOUR,
+    behaviour: {
+      ...DEFAULT_BEHAVIOUR,
+      displayArrows: true,
+    } as typeof DEFAULT_BEHAVIOUR,
     base: () => ({
       width: 1,
       height: 2,

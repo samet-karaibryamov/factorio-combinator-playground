@@ -28,6 +28,7 @@ export const INITIAL_STATE: GameState = {
       ObjectFactory['arithmetic-combinator'](160, 120, 1),
       ObjectFactory['decider-combinator'](120, 160, 2),
       ObjectFactory['arithmetic-combinator'](40, 120, 3),
+      ObjectFactory['constant-combinator'](200, 200, 0),
     ],
     wires: [],
     focusedObject: null,
