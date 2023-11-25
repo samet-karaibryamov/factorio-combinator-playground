@@ -8,7 +8,7 @@ const BREAKPOINTS = [
 
 const shortenAmount = (v: number) => {
   const bp = BREAKPOINTS.findLast(bp => bp[0] < v)
-  if (!bp) return v
+  if (!bp) return String(v)
 
   return `${(v / bp[0]).toFixed(1)}${bp[1]}`
 }

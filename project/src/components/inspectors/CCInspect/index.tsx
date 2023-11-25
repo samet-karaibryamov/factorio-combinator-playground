@@ -1,5 +1,4 @@
 import { SignalGrid } from '../../SignalGrid'
-import { useState } from 'react'
 import { KeyboardCapture, useKeyboard } from 'useKeyboard'
 import { CCGameObjectType } from 'objectSpecs/objects/constantCombinator'
 
@@ -10,30 +9,23 @@ export const CCInspect = ({
   onSubmit: (partial: Partial<CCGameObjectType>) => void
   obj: CCGameObjectType
 }) => {
-  const [signals, setSignals] = useState(obj.circuit.signals)
-
   useKeyboard({
     debugValue: 'CCInspect',
-    onKeyDown: (ev) => {
-      switch (ev.code) {
-        case 'KeyE':
-        case 'Enter': {
-          onSubmit({
-            id: obj.id,
-            circuit: { ...obj.circuit, signals },
-          })
-          break
-        }
-      }
-    },
   })
+
+  const onChange = (newSignals: typeof obj.circuit.signals) => {
+    onSubmit({
+      id: obj.id,
+      circuit: { ...obj.circuit, signals: newSignals },
+    })
+  }
 
   return <>
     <KeyboardCapture>
       <SignalGrid
-        signals={signals}
-        onSubmit={(newSignals) => setSignals(newSignals)}
-        onClear={(i) => { setSignals(signals.filter(s => s.index !== i)) }}
+        signals={obj.circuit.signals}
+        onSubmit={(newSignals) => onChange(newSignals)}
+        onClear={(i) => { onChange(obj.circuit.signals.filter(s => s.index !== i)) }}
       />
     </KeyboardCapture>
   </>
