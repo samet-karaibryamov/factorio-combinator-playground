@@ -25,7 +25,6 @@ export const CCInspect = ({
       <SignalGrid
         signals={obj.circuit.signals}
         onSubmit={(newSignals) => onChange(newSignals)}
-        onClear={(i) => { onChange(obj.circuit.signals.filter(s => s.index !== i)) }}
       />
     </KeyboardCapture>
   </>

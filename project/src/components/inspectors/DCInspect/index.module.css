@@ -1,0 +1,28 @@
+
+.root {
+  color: white;
+  font-size: 0.8em;
+  padding: 10px;
+
+  & > hr {
+    border-color: #454545 #212121 #191919 #212121;
+  }
+
+  & :where(label) {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+}
+
+.row1 {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  & select {
+    background: #8e8e8e;
+    width: 40px;
+    text-align: center;
+  }
+}

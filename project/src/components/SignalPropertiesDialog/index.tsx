@@ -88,10 +88,12 @@ export const SignalPropertiesDialog = (props: SignalPropertiesDialogProps) => {
           <input
             ref={inputRef}
             type="text"
-            defaultValue={props.amount || '0'}
+            defaultValue={props.amount ?? '1'}
             className={styles.input}
+            disabled={props.mode === 'combined' && !prototype}
             onKeyDown={(ev) => {
               switch (ev.code) {
+                case 'KeyE':
                 case 'Enter':
                 case 'Escape': break
                 default: ev.stopPropagation()

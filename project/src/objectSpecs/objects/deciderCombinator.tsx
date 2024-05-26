@@ -41,6 +41,28 @@ export const deciderCombinator = {
       width: 1,
       height: 2,
       sprite: SPRITE,
+      circuit: {
+        leftSignal: null,
+        oper: '>',
+        rightSignal: { amount: 0 },
+        returnSignal: null,
+        returnMode: 'one',
+      } as DCCircuitProps
     }),
   },
 } as const
+
+export type DCInputSignalType = 
+  | { amount: number, prototype?: ToolType | null }
+  | { amount?: number | null, prototype: ToolType }
+  | null
+
+export type DCCircuitProps = {
+  leftSignal?: DCInputSignalType
+  oper: string
+  rightSignal?: DCInputSignalType
+  returnSignal?: ToolType | null
+  returnMode: 'one' | 'input-count'
+}
+
+export type DCGameObjectType = GameObjectType & { circuit: DCCircuitProps }

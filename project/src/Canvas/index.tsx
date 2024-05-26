@@ -6,6 +6,7 @@ import { clampNumberTo, gameCoordsToClampedObjectCoords, getSvgCoords, svgCoords
 import { ObjectFactory, PLACEABLE_OBJECT_SPECS } from 'objectSpecs'
 import { GRID_SQUARE_SIZE } from 'consts'
 import { Wire } from './Wire'
+import { CenterCorssHair } from './CenterCorssHair'
 
 
 const VIEWBOX = { w: 600, h: 600 }
@@ -146,7 +147,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
             })}
           </g>
         </>}
-        <circle cx={x} cy={y} r={5 * zoom} fill="red" />
+        <CenterCorssHair {...{ x, y, zoom }} />
         {_.sortBy(state.game.objects, (obj) => obj.y).map((obj, i) =>
           <GameObject
             key={i}

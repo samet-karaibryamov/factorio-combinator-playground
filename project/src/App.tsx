@@ -8,12 +8,13 @@ import { pick } from 'lodash'
 import { useCallback, useEffect, useReducer } from 'react'
 import { useKeyboard } from 'useKeyboard'
 import { KeyboardCapture } from 'useKeyboard'
-import './App.css'
 import { Canvas } from './Canvas'
 import { ShowGridToggle } from './components/ShowGridToggle'
 import { CCGameObjectType } from 'objectSpecs/objects/constantCombinator'
 import { ACInspect } from 'components/inspectors/ACInspect'
 import { ACGameObjectType } from 'objectSpecs/objects/arithmeticCombinator'
+import { DCGameObjectType } from 'objectSpecs/objects/deciderCombinator'
+import { DCInspect } from 'components/inspectors/DCInspect'
 
 export const INITIAL_STATE: GameState = {
   view: {
@@ -115,10 +116,9 @@ function App() {
           <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
         <div>
-          <h1>hi</h1>
           <div>{JSON.stringify(state.view)}</div>
           <div>{JSON.stringify(state.keyboard)}</div>
-          <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation'))}</div>
+          <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation', 'type'))}</div>
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
           <ShowGridToggle dispatch={dispatch} state={state} />
           <div>
@@ -148,6 +148,23 @@ function App() {
               body={
                 <ACInspect
                   obj={io as ACGameObjectType}
+                  onSubmit={(partial) => {
+                    dispatch({
+                      type: 'updateObject',
+                      partial: partial,
+                    })
+                  }}
+                />
+              }
+            />
+          )}
+          {io?.type === 'decider-combinator' && (
+            <Dialog
+              title="Decider Combinator"
+              onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+              body={
+                <DCInspect
+                  obj={io as DCGameObjectType}
                   onSubmit={(partial) => {
                     dispatch({
                       type: 'updateObject',
