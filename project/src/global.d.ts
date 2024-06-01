@@ -41,6 +41,10 @@ declare global {
         x: number
         y: number
       }>
+      lcdOffsets?: Array<{
+        x: number
+        y: number
+      }>
       knobs: Array<{
         rotations: Array<{
           red: { x: number, y: number },

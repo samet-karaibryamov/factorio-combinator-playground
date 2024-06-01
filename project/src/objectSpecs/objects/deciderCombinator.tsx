@@ -10,6 +10,10 @@ const SPRITE: GameObjectType['sprite'] = {
     { x: -27, y: 5 },
     { x: -6, y: -8.5 },
   ],
+  lcdOffsets: [
+    { x: 10, y: 23 },
+    { x: 32, y: -1 },
+  ],
   knobs: [
     {
       rotations: [

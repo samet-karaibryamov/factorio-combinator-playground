@@ -7,7 +7,7 @@ import styles from './index.module.css'
 
 type CombinedModeProps = {
   mode: 'combined'
-  onSubmit: (p: { amount: number, item: ToolType }) => void
+  onSubmit: (p: { amount: number, item: ToolType } | null) => void
 } & (
   | { prototype: ToolType, amount: number }
   | { prototype: null, amount: null }
@@ -15,7 +15,7 @@ type CombinedModeProps = {
 
 type EitherOrModeProps = {
   mode: 'either-or'
-  onSubmit: (p: { amount: number } | { item: ToolType }) => void
+  onSubmit: (p: { amount: number } | { item: ToolType } | null) => void
 } & (
   | { prototype: ToolType, amount: null }
   | { prototype: null, amount: number }
@@ -26,7 +26,7 @@ export type SignalPropertiesDialogProps =
   | {
     mode: 'item-only'
     prototype: ToolType | null
-    onSubmit: (p: { item: ToolType }) => void
+    onSubmit: (p: { item: ToolType } | null) => void
   }
   | CombinedModeProps
   | EitherOrModeProps

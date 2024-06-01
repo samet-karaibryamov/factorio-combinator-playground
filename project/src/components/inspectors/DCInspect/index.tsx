@@ -20,7 +20,7 @@ const InputSignalSelectorButton = ({
       <SignalSelectorButton
         mode="item-only"
         prototype={sgn?.prototype || null}
-        onSubmit={(opts) => onChange({ prototype: opts.item })}
+        onSubmit={(opts) => onChange(opts && { prototype: opts.item })}
       />
     )
   }
@@ -36,6 +36,11 @@ const InputSignalSelectorButton = ({
         : { amount: null, prototype: null }
       )}
       onSubmit={(opts) => {
+        if (!opts) {
+          onChange(null)
+          return
+        }
+
         const newSignal: DCInputSignalType = 'amount' in opts
           ? { amount: opts.amount }
           : { prototype: opts.item }
@@ -95,7 +100,7 @@ export const DCInspect = ({
           <SignalSelectorButton
             mode="item-only"
             prototype={obj.circuit.returnSignal ?? null}
-            onSubmit={(signal) => onChange({ returnSignal: signal.item })}
+            onSubmit={(signal) => onChange({ returnSignal: signal?.item })}
           />
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
             <TypedRadioGroup

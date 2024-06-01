@@ -5,10 +5,14 @@ import { DEFAULT_BEHAVIOUR } from '../consts';
 const SPRITE: GameObjectType['sprite'] = {
   href: arithmeticCombinatorImg,
   unit: { w: 144, h: 124 },
-  scale: 1.9,
+  scale: 2,
   rotationOffset: [
     { x: -23, y: 10 },
     { x: -4, y: -8.5 },
+  ],
+  lcdOffsets: [
+    { x: 14, y: 27 },
+    { x: 33, y: 1 },
   ],
   knobs: [
     {
@@ -58,9 +62,9 @@ export type ACInputSignalType =
   | null
 
 export type ACCircuitProps = {
-  leftSignal?: ACInputSignalType
+  leftSignal?: ACInputSignalType | null
   oper: string
-  rightSignal?: ACInputSignalType
+  rightSignal?: ACInputSignalType | null
   returnSignal?: ToolType | null
 }
 

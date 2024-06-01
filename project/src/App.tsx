@@ -25,7 +25,7 @@ export const INITIAL_STATE: GameState = {
   },
   game: {
     objects: [
-      ObjectFactory['decider-combinator'](120, 40, 0),
+      ObjectFactory['decider-combinator'](120, 40, 1),
       ObjectFactory['arithmetic-combinator'](160, 120, 1),
       ObjectFactory['decider-combinator'](120, 160, 2),
       ObjectFactory['arithmetic-combinator'](40, 120, 3),

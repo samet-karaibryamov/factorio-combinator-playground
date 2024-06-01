@@ -21,6 +21,11 @@ const InputSignalSelectorButton = ({
         : { amount: null, prototype: null }
       )}
       onSubmit={(opts) => {
+        if (!opts) {
+          onChange(null)
+          return
+        }
+
         const newSignal: ACInputSignalType = 'amount' in opts
           ? { amount: opts.amount }
           : { prototype: opts.item }
@@ -65,7 +70,7 @@ export const ACInspect = ({
             value={obj.circuit.oper}
             onChange={(ev) => onChange({ oper: ev.target.value })}
           >
-            {['+', '-', '*', '/'].map(oper => <option key={oper} value={oper}>{oper}</option>)}
+            {['+', '-', '*', '/', '%', '^', '<<', '>>', '&', '|', '^^'].map(oper => <option key={oper} value={oper}>{oper === '^^' ? '^' : oper}</option>)}
           </select>
           <InputSignalSelectorButton
             sgn={obj.circuit.rightSignal}
@@ -77,7 +82,7 @@ export const ACInspect = ({
         <SignalSelectorButton
           mode="item-only"
           prototype={obj.circuit.returnSignal ?? null}
-          onSubmit={(signal) => onChange({ returnSignal: signal.item })}
+          onSubmit={(signal) => onChange({ returnSignal: signal?.item })}
         />
       </div>
     </KeyboardCapture>

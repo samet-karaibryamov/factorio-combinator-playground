@@ -22,7 +22,6 @@ const checkHit = (obj: GameObjectType, { x, y }: Coords) => {
 }
 
 const getCombinatorKnobClickBoxes = (obj: GameObjectType) => {
-
   const [dirX, dirY] = obj.rotation % 2 ? [1, 0] : [0, 1]
   const isInverted = [1, 2].includes(obj.rotation)
   const { knobs } = obj.sprite

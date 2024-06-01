@@ -25,10 +25,14 @@ export const SignalGrid = ({
             key={i}
             mode="combined"
             {...(sgn ? sgn : { amount: null, prototype: null })}
-            onClear={() => {
-              onSubmit(signals.filter(sgn => sgn.index !== i))
-            }}
-            onSubmit={({ amount, item }) => {
+            onSubmit={(value) => {
+              if (!value) {
+                onSubmit(signals.filter(sgn => sgn.index !== i))
+                return
+              }
+
+              const { amount, item } = value
+
               let newSignals
               const newSignal = { amount, prototype: item, index: i } as Signal
               if (sgn) {
