@@ -1,4 +1,4 @@
-import { OBJECT_SPECS, PLACEABLE_OBJECT_SPECS, WIRE_SPECS } from 'objectSpecs'
+import { OBJECT_SPECS, ObjectToolType, PLACEABLE_OBJECT_SPECS, WIRE_SPECS } from 'objectSpecs'
 import { PathsOfType } from 'tsUtils/PathsOfType'
 import { INITIAL_STATE } from './App'
 
@@ -94,8 +94,7 @@ declare global {
   }
 
   type WireToolType = keyof typeof WIRE_SPECS
-  type ObjectToolType = keyof typeof PLACEABLE_OBJECT_SPECS
-  type ToolType = keyof typeof OBJECT_SPECS
+  type ToolType = WireToolType | ObjectToolType
 
   interface ZoomSpecs {
     dz: number
@@ -162,5 +161,8 @@ export interface ActionsMapType {
   UpdateObject: {
     type: 'updateObject'
     partial: Id<Partial<GameObjectType> & Pick<GameObjectType, 'id'>>
+  }
+  StepCircuits: {
+    type: 'stepCircuits'
   }
 }

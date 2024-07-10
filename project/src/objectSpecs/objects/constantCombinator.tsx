@@ -1,6 +1,6 @@
 import constantCombinatorImg from 'assets/combinator/hr-constant-combinator.png'
 import iconUrl from 'assets/icons/Constant_combinator.png';
-import { Signal } from 'components/SignalGrid';
+import { SignalGridType } from 'components/SignalGrid';
 import { DEFAULT_BEHAVIOUR } from '../consts';
 
 const SPRITE: GameObjectType['sprite'] = {
@@ -26,14 +26,14 @@ export const constantCombinator = {
       height: 1,
       sprite: SPRITE,
       circuit: {
-        signals: [],
+        signals: {},
       } as CCCircuitProps
     }),
   },
 } as const
 
 export type CCCircuitProps = {
-  signals: Signal[]
+  signals: SignalGridType
 }
 
-export type CCGameObjectType = GameObjectType & { circuit: CCCircuitProps }
+export type CCGameObjectType = GameObjectType & ReturnType<typeof constantCombinator['placeable']['base']>

@@ -5,6 +5,7 @@ import styles from './index.module.css'
 import { TypedRadioGroup } from 'components/TypedRadioGroup'
 import { SignalPropertiesDialogProps } from 'components/SignalPropertiesDialog'
 import { ZExclude } from 'tsUtils/ZExclude'
+import { TypedSelect } from 'components/TypedRadioGroup/TypedSelect'
 
 const InputSignalSelectorButton = ({
   mode,
@@ -82,12 +83,13 @@ export const DCInspect = ({
             onChange={(newSignal) => onChange({ leftSignal: newSignal })}
             mode="item-only"
           />
-          <select
+          <TypedSelect
             value={obj.circuit.oper}
             onChange={(ev) => onChange({ oper: ev.target.value })}
-          >
-            {['>', '<', '>=', '<=', '=', '!='].map(oper => <option key={oper} value={oper}>{oper}</option>)}
-          </select>
+            options={(['>', '<', '>=', '<=', '=', '!='] as const)
+              .map(oper => ({ value: oper, label: oper }))
+            }
+          />
           <InputSignalSelectorButton
             sgn={obj.circuit.rightSignal}
             onChange={(newSignal) => onChange({ rightSignal: newSignal })}

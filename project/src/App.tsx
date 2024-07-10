@@ -15,6 +15,16 @@ import { ACInspect } from 'components/inspectors/ACInspect'
 import { ACGameObjectType } from 'objectSpecs/objects/arithmeticCombinator'
 import { DCGameObjectType } from 'objectSpecs/objects/deciderCombinator'
 import { DCInspect } from 'components/inspectors/DCInspect'
+import { CircuitObjectType, stepCircuitState } from 'circuitProcessing'
+
+Object.assign(window, { stepCircuitState })
+
+const cc = ObjectFactory['constant-combinator'](200, 200, 0)
+cc.circuit.signals['arithmetic-combinator'] = {
+  prototype: 'arithmetic-combinator',
+  amount: 13,
+  index: 3,
+}
 
 export const INITIAL_STATE: GameState = {
   view: {
@@ -29,7 +39,7 @@ export const INITIAL_STATE: GameState = {
       ObjectFactory['arithmetic-combinator'](160, 120, 1),
       ObjectFactory['decider-combinator'](120, 160, 2),
       ObjectFactory['arithmetic-combinator'](40, 120, 3),
-      ObjectFactory['constant-combinator'](200, 200, 0),
+      cc,
     ],
     wires: [],
     focusedObject: null,
@@ -48,17 +58,10 @@ export const INITIAL_STATE: GameState = {
 
 const objs = INITIAL_STATE.game.objects
 INITIAL_STATE.game.wires.push(WireFactory({
-  color: 'green-wire',
-  targets: [
-    { objectId: objs[1].id, knobIndex: 1 },
-    { objectId: objs[3].id, knobIndex: 0 },
-  ]
-}))
-INITIAL_STATE.game.wires.push(WireFactory({
   color: 'red-wire',
   targets: [
     { objectId: objs[1].id, knobIndex: 1 },
-    { objectId: objs[3].id, knobIndex: 0 },
+    { objectId: objs[4].id, knobIndex: 0 },
   ]
 }))
 
@@ -107,7 +110,7 @@ function App() {
   } = useGameLoop()
   const fo = state.game.objects.find(go => go.id === state.game.focusedObject)
   const io = state.game.objects.find(go => go.id === state.game.inspectedObject)
-  // window.statez = state
+  Object.assign(window, {statez: state})
 
   return (
     <KeyboardCapture>
@@ -119,7 +122,9 @@ function App() {
           <div>{JSON.stringify(state.view)}</div>
           <div>{JSON.stringify(state.keyboard)}</div>
           <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation', 'type'))}</div>
+          <div>Circuit: {fo && JSON.stringify(formatCircuits(fo as CircuitObjectType))}</div>
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
+          <button onClick={() => dispatch({ type: 'stepCircuits' })}>Step circuits</button>
           <ShowGridToggle dispatch={dispatch} state={state} />
           <div>
             <ItemSelectorGrid value={state.game.tool} onChange={(toolId) => dispatch({ type: 'selectTool', toolId })}/>
@@ -182,3 +187,16 @@ function App() {
 }
 
 export default App
+
+const formatCircuits = (obj: CircuitObjectType) => {
+  if ('currentOutput' in obj) {
+    return obj.currentOutput
+  }
+  if ('signals' in obj.circuit) {
+    return Object.fromEntries(
+      Object
+        .entries(obj.circuit.signals)
+        .map(([k, v]) => [k, v.amount])
+    )
+  }
+}

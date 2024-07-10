@@ -7,6 +7,7 @@ import { WritableDraft } from 'immer/dist/internal'
 import _ from 'lodash'
 import { keyHandler } from './keyHandler'
 import { matchWires } from 'utils/matchWires'
+import { stepCircuitState } from 'circuitProcessing'
 
 if (import.meta.env.DEV) {
   setAutoFreeze(false)
@@ -112,6 +113,7 @@ export const _gameReducer = (state: GameState, action: GameActions) => {
       case 'placeObject': dState.game.objects.push(tagObject(action.instance)); return
       case 'zoom': handleZoom(dState, action); return
       case 'onClick': handleOnClick(dState, action); return
+      case 'stepCircuits': stepCircuitState(dState); return
       case 'updateObject': {
         const obj = dState.game.objects.find(obj => obj.id === action.partial.id)
         if (!obj) {

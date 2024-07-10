@@ -2,6 +2,7 @@ import { KeyboardCapture, useKeyboard } from 'useKeyboard'
 import { ACGameObjectType, ACInputSignalType } from 'objectSpecs/objects/arithmeticCombinator'
 import { SignalSelectorButton } from 'components/SignalSelectorButton'
 import styles from './index.module.css'
+import { TypedSelect } from 'components/TypedRadioGroup/TypedSelect'
 
 const InputSignalSelectorButton = ({
   sgn,
@@ -66,12 +67,16 @@ export const ACInspect = ({
             sgn={obj.circuit.leftSignal}
             onChange={(newSignal) => onChange({ leftSignal: newSignal })}
           />
-          <select
+          <TypedSelect
             value={obj.circuit.oper}
             onChange={(ev) => onChange({ oper: ev.target.value })}
-          >
-            {['+', '-', '*', '/', '%', '^', '<<', '>>', '&', '|', '^^'].map(oper => <option key={oper} value={oper}>{oper === '^^' ? '^' : oper}</option>)}
-          </select>
+            options={(['+', '-', '*', '/', '%', '**', '<<', '>>', '&', '|', '^'] as const)
+              .map(oper => ({
+                value: oper,
+                label: oper === '**' ? '^' : oper,
+              }))
+            }
+          />
           <InputSignalSelectorButton
             sgn={obj.circuit.rightSignal}
             onChange={(newSignal) => onChange({ rightSignal: newSignal })}

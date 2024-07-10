@@ -8,17 +8,19 @@ export type Signal = {
   amount: number
 }
 
+export type SignalGridType = Partial<Record<ToolType, Signal>>
+
 export const SignalGrid = ({
   signals,
   onSubmit,
 }: {
-  signals: Signal[]
-  onSubmit: (signals: Signal[]) => void
+  signals: SignalGridType
+  onSubmit: (signals: SignalGridType) => void
 }) => {
   return (
     <div className={styles.grid}>
       {times(32, (i) => {
-        const sgn = signals.find(s => s.index === i)
+        const sgn = Object.values(signals).find(s => s.index === i)
 
         return (
           <SignalSelectorButton
@@ -27,21 +29,19 @@ export const SignalGrid = ({
             {...(sgn ? sgn : { amount: null, prototype: null })}
             onSubmit={(value) => {
               if (!value) {
-                onSubmit(signals.filter(sgn => sgn.index !== i))
+                if (!sgn) return
+
+                const { [sgn.prototype]: oldSgn, ...newSignals } = signals
+                onSubmit(newSignals)
+
                 return
               }
 
               const { amount, item } = value
 
-              let newSignals
-              const newSignal = { amount, prototype: item, index: i } as Signal
-              if (sgn) {
-                newSignals = amount === 0
-                  ? signals.filter(sgn => sgn.index !== i)
-                  : signals.map(_sgn => _sgn.index === i ? newSignal : _sgn)
-              } else {
-                newSignals = [...signals, newSignal]
-              }
+              const newSignals = { ...signals }
+              newSignals[value.item] = { amount, prototype: item, index: i }
+              
               onSubmit(newSignals)
             }}
           />

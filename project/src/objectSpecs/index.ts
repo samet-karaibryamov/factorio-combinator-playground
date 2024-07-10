@@ -4,6 +4,7 @@ import { deciderCombinator } from './objects/deciderCombinator'
 import { arithmeticCombinator } from './objects/arithmeticCombinator'
 import { redWire, greenWire } from './objects/wires'
 import { DEFAULT_BEHAVIOUR } from './consts'
+import { Except } from 'type-fest'
 
 
 export type ObjectSpecs = {
@@ -18,11 +19,16 @@ export type ObjectSpecs = {
   }
 }
 
+export type ObjectToolType =
+  | 'constant-combinator'
+  | 'decider-combinator'
+  | 'arithmetic-combinator'
+
 export const PLACEABLE_OBJECT_SPECS = {
   'constant-combinator': constantCombinator,
   'decider-combinator': deciderCombinator,
   'arithmetic-combinator': arithmeticCombinator,
-} as const
+} as const satisfies Record<ObjectToolType, any>
 
 export const WIRE_SPECS = {
   'red-wire': redWire,
@@ -41,6 +47,9 @@ export const tagObject = (partialObj: Omit<GameObjectType, 'id'>) => ({
 } as GameObjectType)
 
 type ObjectCreator = (x: number, y: number, r: ObjectRotation) => GameObjectType
+
+type POSpecs = typeof PLACEABLE_OBJECT_SPECS
+
 export const ObjectFactory = mapValues(PLACEABLE_OBJECT_SPECS, (specs, key) => {
   const res: ObjectCreator = (x, y, r) => tagObject({
     x,
@@ -51,4 +60,10 @@ export const ObjectFactory = mapValues(PLACEABLE_OBJECT_SPECS, (specs, key) => {
   })
 
   return res
-})
+}) as {
+  [K in keyof POSpecs]: (x: number, y: number, r: ObjectRotation) => Id<
+    & Except<GameObjectType, 'type'>
+    & ReturnType<POSpecs[K]['placeable']['base']>
+    & { type: K }
+  >
+}

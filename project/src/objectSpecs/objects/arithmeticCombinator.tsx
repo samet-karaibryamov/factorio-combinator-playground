@@ -1,6 +1,26 @@
 import arithmeticCombinatorImg from 'assets/combinator/hr-arithmetic-combinator.png'
 import iconUrl from 'assets/icons/Arithmetic_combinator.png';
 import { DEFAULT_BEHAVIOUR } from '../consts';
+import { SignalBundle } from 'circuitProcessing';
+import { ObjectFactory } from 'objectSpecs';
+
+const transformSignals = (obj: { circuit: ACCircuitProps }, inputs: SignalBundle) => {
+  const crc = obj.circuit
+  if (!crc.leftSignal || !crc.oper || !crc.rightSignal || !crc.returnSignal) {
+    return {}
+  }
+
+  const getAmount = (sgn: typeof crc.leftSignal) => {
+    if (typeof sgn.amount === 'number') return sgn.amount
+
+    return inputs[sgn.prototype] || 0
+  }
+
+  const leftAmount = getAmount(crc.leftSignal)
+  const rightAmount = getAmount(crc.rightSignal)
+
+  return { [crc.returnSignal]: OPER_MAP[crc.oper](leftAmount, rightAmount) }
+}
 
 const SPRITE: GameObjectType['sprite'] = {
   href: arithmeticCombinatorImg,
@@ -34,38 +54,59 @@ const SPRITE: GameObjectType['sprite'] = {
   ]
 }
 
+const base = () => ({
+  width: 1,
+  height: 2,
+  sprite: SPRITE,
+  currentOutput: {} as SignalBundle,
+  circuit: {
+    leftSignal: null,
+    oper: '+',
+    rightSignal: null,
+    returnSignal: null,
+  } as ACCircuitProps
+})
+
 export const arithmeticCombinator = {
   icon: iconUrl,
   placeable: {
     behaviour: {
       ...DEFAULT_BEHAVIOUR,
       displayArrows: true,
-    } as typeof DEFAULT_BEHAVIOUR,
-    base: () => ({
-      width: 1,
-      height: 2,
-      sprite: SPRITE,
-      circuit: {
-        leftSignal: null,
-        oper: '+',
-        rightSignal: null,
-        returnSignal: null,
-      } as ACCircuitProps
-    }),
+      transformSignals,
+    },
+    base,
   },
 } as const
 
 
 export type ACInputSignalType = 
-  | { amount: number, prototype?: ToolType | null }
-  | { amount?: number | null, prototype: ToolType }
+  | { amount: number, prototype?: null }
+  | { amount?: null, prototype: ToolType }
   | null
 
 export type ACCircuitProps = {
   leftSignal?: ACInputSignalType | null
-  oper: string
+  oper: Operator
   rightSignal?: ACInputSignalType | null
   returnSignal?: ToolType | null
 }
 
-export type ACGameObjectType = GameObjectType & { circuit: ACCircuitProps }
+// export type ACGameObjectType = GameObjectType & ReturnType<typeof base>
+export type ACGameObjectType = ReturnType<typeof ObjectFactory['arithmetic-combinator']>
+
+const OPER_MAP = {
+  '+': (left: number, right: number) => left + right,
+  '-': (left: number, right: number) => left - right,
+  '*': (left: number, right: number) => left * right,
+  '/': (left: number, right: number) => left / right,
+  '%': (left: number, right: number) => left % right,
+  '**': (left: number, right: number) => left ** right,
+  '<<': (left: number, right: number) => left << right,
+  '>>': (left: number, right: number) => left >> right,
+  '&': (left: number, right: number) => left & right,
+  '|': (left: number, right: number) => left | right,
+  '^': (left: number, right: number) => left ^ right,
+} as const
+
+type Operator = keyof typeof OPER_MAP
