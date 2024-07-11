@@ -16,6 +16,7 @@ import { ACGameObjectType } from 'objectSpecs/objects/arithmeticCombinator'
 import { DCGameObjectType } from 'objectSpecs/objects/deciderCombinator'
 import { DCInspect } from 'components/inspectors/DCInspect'
 import { CircuitObjectType, stepCircuitState } from 'circuitProcessing'
+import { BrightnessSelector } from 'components/BrightnessSelector'
 
 Object.assign(window, { stepCircuitState })
 
@@ -32,6 +33,7 @@ export const INITIAL_STATE: GameState = {
     y: 0,
     zoom: 1,
     isGridShown: false,
+    brightness: 1,
   },
   game: {
     objects: [
@@ -125,7 +127,8 @@ function App() {
           <div>Circuit: {fo && JSON.stringify(formatCircuits(fo as CircuitObjectType))}</div>
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
           <button onClick={() => dispatch({ type: 'stepCircuits' })}>Step circuits</button>
-          <ShowGridToggle dispatch={dispatch} state={state} />
+          <ShowGridToggle {...{ dispatch, state }} />
+          <BrightnessSelector {...{ dispatch, state }} />
           <div>
             <ItemSelectorGrid value={state.game.tool} onChange={(toolId) => dispatch({ type: 'selectTool', toolId })}/>
           </div>

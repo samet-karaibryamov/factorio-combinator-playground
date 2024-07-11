@@ -77,6 +77,7 @@ declare global {
       y: number
       zoom: number
       isGridShown: boolean
+      brightness: number
     }
     game: {
       objects: GameObjectType[]
@@ -84,7 +85,7 @@ declare global {
       focusedObject?: string | null
       tool: ToolType | null
       toolRotation: ObjectRotation
-      toolObject?: GameObjectType | WireObjectType | null
+      toolObject?: WireObjectType | null
       inspectedObject?: string | null
     }
     keyboard: KeyboardType
@@ -132,6 +133,10 @@ export interface ActionsMapType {
   ShowGrid: {
     type: 'showGrid'
     isShown: boolean
+  }
+  SetBrightness: {
+    type: 'setBrightness'
+    value: number
   }
   HoverObject: {
     type: 'hoverObject'

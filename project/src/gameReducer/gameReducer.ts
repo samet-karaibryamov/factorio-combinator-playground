@@ -108,6 +108,7 @@ export const _gameReducer = (state: GameState, action: GameActions) => {
       case 'keyup':
       case 'keydown': keyHandler(dState, action); return
       case 'showGrid': dState.view.isGridShown = action.isShown; return
+      case 'setBrightness': dState.view.brightness = action.value; return
       case 'hoverObject': dState.game.focusedObject = action.objId; return
       case 'selectTool': dState.game.tool = action.toolId; return
       case 'placeObject': dState.game.objects.push(tagObject(action.instance)); return
