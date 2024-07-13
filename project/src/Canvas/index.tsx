@@ -10,8 +10,6 @@ import { CenterCorssHair } from './CenterCorssHair'
 import { Grid } from './Grid'
 
 
-const VIEWBOX = { w: 600, h: 600 }
-
 const GHOSTS = {
   'constant-combinator': ObjectFactory['constant-combinator'](0, 0, 0),
   'arithmetic-combinator': ObjectFactory['arithmetic-combinator'](0, 0, 0),
@@ -45,6 +43,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
     x,
     y,
     zoom,
+    size: canvasSize,
   } = state.view
   const scaledGridSize = GRID_SQUARE_SIZE * zoom
 
@@ -73,8 +72,8 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
     <div style={{ border: '1px solid red', display: 'inline-flex' }}>
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${VIEWBOX.w} ${VIEWBOX.h}`}
-        style={{ width: VIEWBOX.w, height: VIEWBOX.h }}
+        viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}
+        style={{ width: canvasSize.w, height: canvasSize.h }}
         onMouseMove={(ev) => {
           const svgCoords = getSvgCoords(ev, ev.currentTarget)
 
@@ -96,7 +95,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
         <Grid
           scaledGridSize={scaledGridSize}
           view={state.view}
-          viewbox={VIEWBOX}
+          viewbox={canvasSize}
         />
         <CenterCorssHair {...{ x, y, zoom }} />
         <g className="game-objects">

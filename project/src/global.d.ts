@@ -75,6 +75,7 @@ declare global {
     view: {
       x: number
       y: number
+      size: { w: number, h: number }
       zoom: number
       isGridShown: boolean
       brightness: number

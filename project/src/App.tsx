@@ -1,10 +1,9 @@
 import { ObjectFactory } from 'objectSpecs'
 import { WireFactory } from 'Canvas/wireFactory'
 import { CCInspect } from 'components/inspectors/CCInspect'
-import { ItemSelectorGrid } from 'components/ItemSelectorGrid'
 import { Dialog } from 'Dialogs'
 import { gameReducer } from 'gameReducer/gameReducer'
-import { pick } from 'lodash'
+import _, { pick } from 'lodash'
 import { useCallback, useEffect, useReducer } from 'react'
 import { useKeyboard } from 'useKeyboard'
 import { KeyboardCapture } from 'useKeyboard'
@@ -28,10 +27,18 @@ cc.circuit.signals['arithmetic-combinator'] = {
   index: 3,
 }
 
+const getCanvasSize = () => {
+  return {
+    w: window.innerWidth - 5,
+    h: window.innerHeight - 5,
+  }
+}
+
 export const INITIAL_STATE: GameState = {
   view: {
     x: 0,
     y: 0,
+    size: getCanvasSize(),
     zoom: 1,
     isGridShown: false,
     brightness: Number(localStorage.getItem('brightness')) || 1,
@@ -117,13 +124,28 @@ function App() {
   const io = state.game.objects.find(go => go.id === state.game.inspectedObject)
   Object.assign(window, {statez: state})
 
+  useEffect(() => {
+    const handler = _.throttle(() => {
+      dispatch({
+        type: 'setState',
+        path: 'view.size',
+        value: getCanvasSize(),
+      })
+    })
+    window.addEventListener('resize', handler)
+    
+    return () => {
+      window.removeEventListener('resize', handler)
+    }
+  }, [])
+
   return (
     <KeyboardCapture>
-      <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200, '--brightness': state.view.brightness }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', '--brightness': state.view.brightness }}>
         <div style={{ flexGrow: 0 }}>
           <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
-        <div>
+        <div style={{ position: 'absolute', right: 0, color: 'white', width: 500, backgroundColor: 'transparent' }}>
           <div>{JSON.stringify(state.view)}</div>
           <div>{JSON.stringify(state.keyboard)}</div>
           <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation', 'type'))}</div>
@@ -132,9 +154,6 @@ function App() {
           <button onClick={() => dispatch({ type: 'stepCircuits' })}>Step circuits</button>
           <ShowGridToggle {...{ dispatch, state }} />
           <BrightnessSelector {...{ dispatch, state }} />
-          <div>
-            <ItemSelectorGrid value={state.game.tool} onChange={(toolId) => dispatch({ type: 'selectTool', toolId })}/>
-          </div>
           {io?.type === 'constant-combinator' && (
             <Dialog
               title="Constant Combinator"
