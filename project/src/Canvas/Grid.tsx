@@ -20,7 +20,7 @@ export const Grid = ({
   const countY = Math.trunc((viewbox.h - minY) / scaledGridSize) + 1
 
   return <>
-    <g className="grid-squares" style={{ filter: `brightness(${view.brightness})` }}>
+    <g className="grid-squares">
       <rect x="0" y="0" width="100%" height="100%" fill="#313031"></rect>
       {_.times(countX + 1, (ix) => {
         const xx = minX + (ix - 1) * scaledGridSize

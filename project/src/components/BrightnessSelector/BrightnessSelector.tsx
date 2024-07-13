@@ -9,7 +9,7 @@ export const BrightnessSelector = ({
 }) => {
   return (
     <input
-      type="number"
+      type="range"
       value={state.view.brightness}
       onChange={(ev) => {
         dispatch({
@@ -18,7 +18,7 @@ export const BrightnessSelector = ({
         })
       }}
       min={1}
-      max={3}
+      max={2}
       step={0.1}
     />
   )

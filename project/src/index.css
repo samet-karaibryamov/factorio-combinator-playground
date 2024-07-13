@@ -1,3 +1,7 @@
+:root {
+  --brightness: 3;
+}
+
 body {
   margin: 0;
   font-family: 'Titillium Web', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -28,4 +32,12 @@ code {
 
 .btn:active {
   background-color: #e8ac52;
+}
+
+g.game-objects {
+  filter: brightness(var(--brightness));
+}
+
+g.grid-squares {
+  filter: brightness(calc(2 * var(--brightness) - 1));
 }

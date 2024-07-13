@@ -1,28 +1,26 @@
 import { PointerEventHandler, useState } from 'react'
 
-export const usePointerDrag = (initialCoords: Coords) => {
+export const usePointerDrag = (initialCoords: Coords | (() => Coords)) => {
   const [coords, setCoords] = useState(initialCoords)
-  const [isDragging, setIsDragging] = useState(false)
-  const [prevMouse, setPrevMouse] = useState<Coords>({ x: 0, y: 0 })
+  const [diff, setDiff] = useState<Coords>()
 
   const onDown: PointerEventHandler<HTMLDivElement> = (e) => {
-    setIsDragging(true)
     ;(e.target as HTMLDivElement).setPointerCapture(e.pointerId)
-    setPrevMouse({ x: e.pageX, y: e.pageY })
+    setDiff({
+      x: e.pageX - coords.x,
+      y: e.pageY - coords.y,
+    })
   }
   const onMove: PointerEventHandler<HTMLDivElement> = e => {
-    if (!isDragging) return
+    if (!diff) return
 
-    // console.log(pick(e, 'pageX', 'pageY'))
-    const newMouse = { x: e.pageX, y: e.pageY }
     setCoords({
-      x: coords.x + newMouse.x - prevMouse.x,
-      y: coords.y + newMouse.y - prevMouse.y,
+      x: e.pageX - diff.x,
+      y: e.pageY - diff.y,
     })
-    setPrevMouse(newMouse)
 
  }
- const onUp: PointerEventHandler<HTMLDivElement> = e => setIsDragging(false)
+ const onUp: PointerEventHandler<HTMLDivElement> = () => setDiff(undefined)
 
   const props = {
     onPointerDown: onDown,

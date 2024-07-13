@@ -84,6 +84,10 @@ const handleOnClick = (dState: WritableDraft<GameState>, action: ActionsMapType[
   }
 }
 
+const saveBrightness = _.debounce((value: number) => {
+  localStorage.setItem('brightness', String(value))
+})
+
 export const _gameReducer = (state: GameState, action: GameActions) => {
   if (action.type === 'step') {
     const newGameState = { ...state.view }
@@ -108,13 +112,21 @@ export const _gameReducer = (state: GameState, action: GameActions) => {
       case 'keyup':
       case 'keydown': keyHandler(dState, action); return
       case 'showGrid': dState.view.isGridShown = action.isShown; return
-      case 'setBrightness': dState.view.brightness = action.value; return
+      case 'setBrightness': {
+        dState.view.brightness = action.value
+        saveBrightness(action.value)
+        return
+      }
       case 'hoverObject': dState.game.focusedObject = action.objId; return
-      case 'selectTool': dState.game.tool = action.toolId; return
       case 'placeObject': dState.game.objects.push(tagObject(action.instance)); return
       case 'zoom': handleZoom(dState, action); return
       case 'onClick': handleOnClick(dState, action); return
       case 'stepCircuits': stepCircuitState(dState); return
+      case 'selectTool': {
+        dState.game.tool = action.toolId
+        dState.game.isToolbarOpen = false
+        return
+      }
       case 'updateObject': {
         const obj = dState.game.objects.find(obj => obj.id === action.partial.id)
         if (!obj) {

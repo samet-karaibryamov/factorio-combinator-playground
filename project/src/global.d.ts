@@ -87,6 +87,7 @@ declare global {
       toolRotation: ObjectRotation
       toolObject?: WireObjectType | null
       inspectedObject?: string | null
+      isToolbarOpen: boolean
     }
     keyboard: KeyboardType
     dialogStack: Array<{

@@ -17,6 +17,7 @@ import { DCGameObjectType } from 'objectSpecs/objects/deciderCombinator'
 import { DCInspect } from 'components/inspectors/DCInspect'
 import { CircuitObjectType, stepCircuitState } from 'circuitProcessing'
 import { BrightnessSelector } from 'components/BrightnessSelector'
+import { ToolbarDlg } from 'components/ToolbarDlg'
 
 Object.assign(window, { stepCircuitState })
 
@@ -33,7 +34,7 @@ export const INITIAL_STATE: GameState = {
     y: 0,
     zoom: 1,
     isGridShown: false,
-    brightness: 1,
+    brightness: Number(localStorage.getItem('brightness')) || 1,
   },
   game: {
     objects: [
@@ -47,6 +48,7 @@ export const INITIAL_STATE: GameState = {
     focusedObject: null,
     tool: null,
     toolRotation: 0,
+    isToolbarOpen: false,
   },
   keyboard: {
     up: false,
@@ -103,6 +105,7 @@ const useGameLoop = () => {
 }
 
 export type UseGameLoop = typeof useGameLoop
+export type GameDispatch = ReturnType<UseGameLoop>['dispatch']
 
 function App() {
   const {
@@ -116,7 +119,7 @@ function App() {
 
   return (
     <KeyboardCapture>
-      <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginLeft: 200, '--brightness': state.view.brightness }}>
         <div style={{ flexGrow: 0 }}>
           <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
@@ -181,6 +184,13 @@ function App() {
                   }}
                 />
               }
+            />
+          )}
+          {state.game.isToolbarOpen && (
+            <Dialog
+              title=""
+              onClose={() => dispatch({ type: 'setState', path: 'game.isToolbarOpen', value: false })}
+              body={<ToolbarDlg {...{ state, dispatch }} />}
             />
           )}
         </div>

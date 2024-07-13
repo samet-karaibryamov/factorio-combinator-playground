@@ -99,7 +99,7 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
           viewbox={VIEWBOX}
         />
         <CenterCorssHair {...{ x, y, zoom }} />
-        <g className="game-objects" style={{ filter: `brightness(${1 + 0.2 * (state.view.brightness - 1)})` }}>
+        <g className="game-objects">
           {_.sortBy(state.game.objects, (obj) => obj.y).map((obj, i) =>
             <GameObject
               key={i}

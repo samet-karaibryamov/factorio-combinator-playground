@@ -70,6 +70,10 @@ export const keyHandler = (dState: WritableDraft<GameState>, action: ActionsMapT
           return
         }
       }
+      case 'KeyE': {
+        dState.game.isToolbarOpen = true
+        return
+      }
     }
   }
 }
