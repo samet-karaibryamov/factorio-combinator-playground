@@ -69,76 +69,74 @@ export const Canvas = ({ state, onZoom, dispatch }: CanvasProps) => {
   const { ghost } = useToolObject(state, mouseXY)
 
   return (
-    <div style={{ border: '1px solid red', display: 'inline-flex' }}>
-      <svg
-        ref={svgRef}
-        viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}
-        style={{ width: canvasSize.w, height: canvasSize.h }}
-        onMouseMove={(ev) => {
-          const svgCoords = getSvgCoords(ev, ev.currentTarget)
+    <svg
+      ref={svgRef}
+      viewBox={`0 0 ${canvasSize.w} ${canvasSize.h}`}
+      style={{ width: canvasSize.w, height: canvasSize.h }}
+      onMouseMove={(ev) => {
+        const svgCoords = getSvgCoords(ev, ev.currentTarget)
 
-          setMouseXY(svgCoords)
+        setMouseXY(svgCoords)
 
-          // FOCUS OBJECT
-          const gameCoords = svgCoordsToGameCoords(svgCoords, state)
-          const obj = state.game.objects.find(obj => PLACEABLE_OBJECT_SPECS[obj.type].placeable.behaviour.checkHit(obj, gameCoords))
-          if (obj?.id !== state.game.focusedObject && !ghost) {
-            dispatch({ type: 'hoverObject', objId: obj?.id })
-          }
-        }}
-        onClick={ev => {
-          const svgCoords = getSvgCoords(ev, ev.currentTarget)
-          const gameCoords = svgCoordsToGameCoords(svgCoords, state)
-          dispatch({ type: 'onClick', gameCoords })
-        }}
-      >
-        <Grid
-          scaledGridSize={scaledGridSize}
-          view={state.view}
-          viewbox={canvasSize}
-        />
-        <CenterCorssHair {...{ x, y, zoom }} />
-        <g className="game-objects">
-          {_.sortBy(state.game.objects, (obj) => obj.y).map((obj, i) =>
-            <GameObject
-              key={i}
-              gridSize={scaledGridSize}
-              view={state.view}
-              gameObject={obj}
-            />
-          )}
-        </g>
-        <g className="wires">
-          {state.game.wires.map(w =>
-            <Wire
-              key={w.id}
-              wire={w}
-              state={state}
-            />
-          )}
-        </g>
-        <g className="focus">
-          {state.game.objects
-            .filter(obj => obj.id === state.game.focusedObject)
-            .map(obj => <Focus key="focus" {...{ scaledGridSize, state, obj }} />)
-          }
-        </g>
-        {ghost && (
+        // FOCUS OBJECT
+        const gameCoords = svgCoordsToGameCoords(svgCoords, state)
+        const obj = state.game.objects.find(obj => PLACEABLE_OBJECT_SPECS[obj.type].placeable.behaviour.checkHit(obj, gameCoords))
+        if (obj?.id !== state.game.focusedObject && !ghost) {
+          dispatch({ type: 'hoverObject', objId: obj?.id })
+        }
+      }}
+      onClick={ev => {
+        const svgCoords = getSvgCoords(ev, ev.currentTarget)
+        const gameCoords = svgCoordsToGameCoords(svgCoords, state)
+        dispatch({ type: 'onClick', gameCoords })
+      }}
+    >
+      <Grid
+        scaledGridSize={scaledGridSize}
+        view={state.view}
+        viewbox={canvasSize}
+      />
+      <CenterCorssHair {...{ x, y, zoom }} />
+      <g className="game-objects">
+        {_.sortBy(state.game.objects, (obj) => obj.y).map((obj, i) =>
           <GameObject
-            view={state.view}
-            gameObject={ghost}
+            key={i}
             gridSize={scaledGridSize}
-            type="tool"
+            view={state.view}
+            gameObject={obj}
           />
         )}
-        {state.game.toolObject && (
+      </g>
+      <g className="wires">
+        {state.game.wires.map(w =>
           <Wire
-            wire={state.game.toolObject}
+            key={w.id}
+            wire={w}
             state={state}
-            mouseCoords={mouseXY}
           />
         )}
-      </svg>
-    </div>
+      </g>
+      <g className="focus">
+        {state.game.objects
+          .filter(obj => obj.id === state.game.focusedObject)
+          .map(obj => <Focus key="focus" {...{ scaledGridSize, state, obj }} />)
+        }
+      </g>
+      {ghost && (
+        <GameObject
+          view={state.view}
+          gameObject={ghost}
+          gridSize={scaledGridSize}
+          type="tool"
+        />
+      )}
+      {state.game.toolObject && (
+        <Wire
+          wire={state.game.toolObject}
+          state={state}
+          mouseCoords={mouseXY}
+        />
+      )}
+    </svg>
   )
 }

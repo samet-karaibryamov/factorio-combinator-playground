@@ -8,7 +8,6 @@ import { useCallback, useEffect, useReducer } from 'react'
 import { useKeyboard } from 'useKeyboard'
 import { KeyboardCapture } from 'useKeyboard'
 import { Canvas } from './Canvas'
-import { ShowGridToggle } from './components/ShowGridToggle'
 import { CCGameObjectType } from 'objectSpecs/objects/constantCombinator'
 import { ACInspect } from 'components/inspectors/ACInspect'
 import { ACGameObjectType } from 'objectSpecs/objects/arithmeticCombinator'
@@ -29,8 +28,8 @@ cc.circuit.signals['arithmetic-combinator'] = {
 
 const getCanvasSize = () => {
   return {
-    w: window.innerWidth - 5,
-    h: window.innerHeight - 5,
+    w: window.innerWidth + 2,
+    h: window.innerHeight + 2,
   }
 }
 
@@ -141,18 +140,15 @@ function App() {
 
   return (
     <KeyboardCapture>
-      <div style={{ display: 'flex', alignItems: 'flex-start', '--brightness': state.view.brightness }}>
-        <div style={{ flexGrow: 0 }}>
+      <div style={{ '--brightness': state.view.brightness, height: '100%', overflow: 'hidden' }}>
+        <div style={{ margin: -1 }}>
           <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
-        <div style={{ position: 'absolute', right: 0, color: 'white', width: 500, backgroundColor: 'transparent' }}>
-          <div>{JSON.stringify(state.view)}</div>
-          <div>{JSON.stringify(state.keyboard)}</div>
+        <div style={{ position: 'absolute', top: 0, right: 0, color: 'white', width: 500, backgroundColor: 'transparent' }}>
           <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation', 'type'))}</div>
           <div>Circuit: {fo && JSON.stringify(formatCircuits(fo as CircuitObjectType))}</div>
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
-          <button onClick={() => dispatch({ type: 'stepCircuits' })}>Step circuits</button>
-          <ShowGridToggle {...{ dispatch, state }} />
+          <button onClick={() => dispatch({ type: 'stepCircuits' })}>Step circuits ⏭</button>
           <BrightnessSelector {...{ dispatch, state }} />
           {io?.type === 'constant-combinator' && (
             <Dialog
