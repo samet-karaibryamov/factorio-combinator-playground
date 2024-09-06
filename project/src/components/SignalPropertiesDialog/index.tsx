@@ -4,6 +4,7 @@ import { ItemSelectorGrid } from 'components/ItemSelectorGrid'
 import { useRef, useState } from 'react'
 import { useKeyboard } from 'useKeyboard'
 import styles from './index.module.css'
+import { Input } from 'components/Input'
 
 type CombinedModeProps = {
   mode: 'combined'
@@ -85,7 +86,7 @@ export const SignalPropertiesDialog = (props: SignalPropertiesDialogProps) => {
       />
       <Row end gap={5} style={{ padding: 5 }}>
         {props.mode !== 'item-only' &&
-          <input
+          <Input
             ref={inputRef}
             type="text"
             defaultValue={props.amount ?? '1'}

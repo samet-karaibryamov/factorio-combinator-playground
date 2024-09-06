@@ -19,6 +19,12 @@ import { ToolbarDlg } from 'components/ToolbarDlg'
 
 Object.assign(window, { stepCircuitState })
 
+const ac = ObjectFactory['arithmetic-combinator'](160, 120, 1)
+ac.circuit.leftSignal = { prototype: 'arithmetic-combinator' }
+ac.circuit.oper = '-'
+ac.circuit.rightSignal = { amount: 7 }
+ac.circuit.returnSignal = 'decider-combinator'
+
 const cc = ObjectFactory['constant-combinator'](200, 200, 0)
 cc.circuit.signals['arithmetic-combinator'] = {
   prototype: 'arithmetic-combinator',
@@ -45,7 +51,7 @@ export const INITIAL_STATE: GameState = {
   game: {
     objects: [
       ObjectFactory['decider-combinator'](120, 40, 1),
-      ObjectFactory['arithmetic-combinator'](160, 120, 1),
+      ac,
       ObjectFactory['decider-combinator'](120, 160, 2),
       ObjectFactory['arithmetic-combinator'](40, 120, 3),
       cc,
@@ -145,6 +151,7 @@ function App() {
           <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
         <div style={{ position: 'absolute', top: 0, right: 0, color: 'white', width: 500, backgroundColor: 'transparent' }}>
+          <div>Press E to build</div>
           <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation', 'type'))}</div>
           <div>Circuit: {fo && JSON.stringify(formatCircuits(fo as CircuitObjectType))}</div>
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
