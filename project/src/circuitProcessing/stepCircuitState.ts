@@ -11,6 +11,8 @@ const contactToKey = (color: WireToolType, knobInfo: WireObjectType['targets'][0
 
 export type CircuitObjectType = ACGameObjectType | DCGameObjectType | CCGameObjectType
 
+type IOCircuitObjectType = ACGameObjectType | DCGameObjectType
+
 const isCircuiObject = (obj: GameObjectType): obj is CircuitObjectType => {
   return !!obj.sprite.knobs
 }
@@ -43,14 +45,14 @@ export const stepCircuitState = (state: GameState) => {
   })
 
   const objToNtwMap: Record<string, {
-    obj: ACGameObjectType
+    obj: IOCircuitObjectType
     networks: typeof networks
     inputSignals: SignalBundle
   }> = {}
 
   networks.forEach(ntw => {
     Object.values(ntw.combinators.inputs).forEach(obj => {
-      objToNtwMap[obj.id] = objToNtwMap[obj.id] || { obj, networks: [], inputSignals: {} }
+      if (!objToNtwMap[obj.id]) objToNtwMap[obj.id] = { obj, networks: [], inputSignals: {} }
       objToNtwMap[obj.id].networks.push(ntw)
       typedEntries(ntw.signals).forEach(([k, v]) => {
         addSignal(objToNtwMap[obj.id].inputSignals, k, v)
@@ -58,11 +60,31 @@ export const stepCircuitState = (state: GameState) => {
     })
   })
 
-  Object.values(objToNtwMap).forEach(objNtw => {
-    const { obj } = objNtw
-    const { behaviour } = PLACEABLE_OBJECT_SPECS[obj.type].placeable
-    obj.currentOutput = behaviour.transformSignals(obj, objNtw.inputSignals)
+  circuitObjects.forEach(obj => {
+    const objNtw = objToNtwMap[obj.id]
+
+    if ('currentOutput' in obj) {
+      if (!objNtw) {
+        obj.currentOutput = {}
+        obj.currentInput = { red: {}, green: {} }
+        return
+      }
+
+      const { behaviour } = PLACEABLE_OBJECT_SPECS[obj.type].placeable
+
+      obj.currentOutput = behaviour.transformSignals(obj as any, objNtw.inputSignals)
+      obj.currentInput = {
+        red: objNtw.networks.find(ntw => ntw.color === 'red')?.signals || {},
+        green: objNtw.networks.find(ntw => ntw.color === 'green')?.signals || {},
+      }
+
+      if (objNtw.networks.length > 2) {
+        alert('Something wrong! More than two input networks detected!')
+      }
+    }
   })
+
+
   return objToNtwMap
 }
 
@@ -78,7 +100,7 @@ const collectNetworks = (
     keys: Set<string>
     wires: WireObjectType[]
     combinators: {
-      inputs: Record<string, CircuitObjectType>,
+      inputs: Record<string, IOCircuitObjectType>,
       outputs: Record<string, CircuitObjectType>,
     }
     color: 'red' | 'green',
@@ -94,11 +116,11 @@ const collectNetworks = (
     ]
     const ntwks = ntwKeys.map(k => networks[k]).filter((d): d is Network => !!d)
 
-    const inputs: Record<string, CircuitObjectType> = {}
+    const inputs: Record<string, IOCircuitObjectType> = {}
     const outputs: Record<string, CircuitObjectType> = {}
 
     targets.forEach(trg => {
-      if (trg.knobIndex === 1) inputs[trg.objectId] = idMap[trg.objectId]
+      if (trg.knobIndex === 1) inputs[trg.objectId] = idMap[trg.objectId] as IOCircuitObjectType
       if (trg.knobIndex === 0) outputs[trg.objectId] = idMap[trg.objectId]
     })
 
@@ -122,4 +144,4 @@ const collectNetworks = (
   return networks
 }
 
-export type SignalBundle = Partial<Record<ToolType, number>>
+export type SignalBundle = { [K in ToolType]?: number }

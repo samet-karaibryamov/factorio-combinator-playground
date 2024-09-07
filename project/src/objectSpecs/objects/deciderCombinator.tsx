@@ -67,6 +67,7 @@ const base = () => ({
   height: 2,
   sprite: SPRITE,
   currentOutput: {} as SignalBundle,
+  currentInput: { red: {} as SignalBundle, green: {} as SignalBundle },
   circuit: {
     leftSignal: null,
     oper: '>',
