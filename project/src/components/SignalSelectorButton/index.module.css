@@ -1,5 +1,5 @@
 
 .root {
   display: inline-flex;
-  background: #313031;
+  background: var(--light-gray);
 }

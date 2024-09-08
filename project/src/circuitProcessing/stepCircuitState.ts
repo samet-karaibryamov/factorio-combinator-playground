@@ -11,9 +11,9 @@ const contactToKey = (color: WireToolType, knobInfo: WireObjectType['targets'][0
 
 export type CircuitObjectType = ACGameObjectType | DCGameObjectType | CCGameObjectType
 
-type IOCircuitObjectType = ACGameObjectType | DCGameObjectType
+export type IOCircuitObjectType = ACGameObjectType | DCGameObjectType
 
-const isCircuiObject = (obj: GameObjectType): obj is CircuitObjectType => {
+export const isCircuiObject = (obj: GameObjectType): obj is CircuitObjectType => {
   return !!obj.sprite.knobs
 }
 

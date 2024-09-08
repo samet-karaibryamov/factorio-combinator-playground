@@ -1,0 +1,33 @@
+
+.root {
+  filter: brightness(var(--brightness));
+  width: calc(5 * (32px + 5px) + 5px);
+  box-shadow: var(--3d-box-shadow);
+  padding: 1px;
+  overflow: scroll;
+}
+
+.iconList {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  box-shadow: var(--3d-box-shadow-sunken);
+  /* background: #238b21; */
+  /* min-height: 46px; */
+
+  & .iconWrapper {
+    padding: 2px;
+    display: flex;
+  }
+}
+
+.combinatorInfo {
+  background: var(--light-gray);
+
+  & .title {
+    color: white;
+    box-shadow: var(--3d-box-shadow);
+    /* border: 1px solid var(--dark-gray); */
+    padding: 0 5px;
+  }
+}

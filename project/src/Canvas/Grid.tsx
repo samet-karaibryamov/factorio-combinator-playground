@@ -21,7 +21,7 @@ export const Grid = ({
 
   return <>
     <g className="grid-squares">
-      <rect x="0" y="0" width="100%" height="100%" fill="#313031"></rect>
+      <rect x="0" y="0" width="100%" height="100%" fill="var(--light-gray)"></rect>
       {_.times(countX + 1, (ix) => {
         const xx = minX + (ix - 1) * scaledGridSize
 
@@ -38,7 +38,7 @@ export const Grid = ({
               y={yy}
               width={scaledGridSize}
               height={scaledGridSize}
-              fill="#1b1b1b"
+              fill="var(--dark-gray)"
             />
           )
         })

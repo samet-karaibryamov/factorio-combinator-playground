@@ -1,5 +1,9 @@
 :root {
   --brightness: 3;
+  --light-gray: #313031;
+  --dark-gray: #1b1b1b;
+  --3d-box-shadow: hsl(0 0% 30% / 1) 1px 1px inset, hsl(0 0% 10% / 1) -1px -1px inset;
+  --3d-box-shadow-sunken: hsl(0 0% 10% / 1) 1px 1px inset, hsl(0 0% 30% / 1) -1px -1px inset;
 }
 
 html, body, #root {

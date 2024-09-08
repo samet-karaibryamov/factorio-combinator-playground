@@ -16,6 +16,7 @@ import { DCInspect } from 'components/inspectors/DCInspect'
 import { CircuitObjectType, stepCircuitState } from 'circuitProcessing'
 import { BrightnessSelector } from 'components/BrightnessSelector'
 import { ToolbarDlg } from 'components/ToolbarDlg'
+import { SignalsDisplay } from 'components/SignalsDisplay'
 
 Object.assign(window, { stepCircuitState })
 
@@ -24,6 +25,8 @@ ac.circuit.leftSignal = { prototype: 'arithmetic-combinator' }
 ac.circuit.oper = '-'
 ac.circuit.rightSignal = { amount: 7 }
 ac.circuit.returnSignal = 'decider-combinator'
+ac.currentOutput = { 'constant-combinator': 63, 'decider-combinator': 14 }
+ac.currentInput = { red: { 'decider-combinator': 43 }, green: {} }
 
 const cc = ObjectFactory['constant-combinator'](200, 200, 0)
 cc.circuit.signals['arithmetic-combinator'] = {
@@ -150,72 +153,81 @@ function App() {
         <div style={{ margin: -1 }}>
           <Canvas state={state} onZoom={onZoom} dispatch={dispatch} />
         </div>
-        <div style={{ position: 'absolute', top: 0, right: 0, color: 'white', width: 500, backgroundColor: 'transparent' }}>
+        <div style={{ position: 'absolute', top: 20, left: 20, color: 'white', backgroundColor: 'transparent' }}>
           <div>Press E to build</div>
           <div>Focused: {fo && JSON.stringify(pick(fo, 'id', 'rotation', 'type'))}</div>
           <div>Circuit: {fo && JSON.stringify(formatCircuits(fo as CircuitObjectType))}</div>
           <button onClick={() => dispatch({ type: 'setState', path: 'view.zoom', value: 1 })}>Set zoom=1</button>
           <button onClick={() => dispatch({ type: 'stepCircuits' })}>Step circuits ⏭</button>
           <BrightnessSelector {...{ dispatch, state }} />
-          {io?.type === 'constant-combinator' && (
-            <Dialog
-              title="Constant Combinator"
-              onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
-              body={
-                <CCInspect
-                  obj={io as CCGameObjectType}
-                  onSubmit={(partial) => {
-                    dispatch({
-                      type: 'updateObject',
-                      partial: partial as GameObjectType,
-                    })
-                  }}
-                />
-              }
-            />
-          )}
-          {io?.type === 'arithmetic-combinator' && (
-            <Dialog
-              title="Arithmetic Combinator"
-              onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
-              body={
-                <ACInspect
-                  obj={io as ACGameObjectType}
-                  onSubmit={(partial) => {
-                    dispatch({
-                      type: 'updateObject',
-                      partial: partial,
-                    })
-                  }}
-                />
-              }
-            />
-          )}
-          {io?.type === 'decider-combinator' && (
-            <Dialog
-              title="Decider Combinator"
-              onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
-              body={
-                <DCInspect
-                  obj={io as DCGameObjectType}
-                  onSubmit={(partial) => {
-                    dispatch({
-                      type: 'updateObject',
-                      partial: partial,
-                    })
-                  }}
-                />
-              }
-            />
-          )}
-          {state.game.isToolbarOpen && (
-            <Dialog
-              title=""
-              onClose={() => dispatch({ type: 'setState', path: 'game.isToolbarOpen', value: false })}
-              body={<ToolbarDlg {...{ state, dispatch }} />}
-            />
-          )}
         </div>
+        <SignalsDisplay
+          state={state}
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 20,
+            maxHeight: 'calc(100vh - 40px)',
+          }}
+        />
+        {io?.type === 'constant-combinator' && (
+          <Dialog
+            title="Constant Combinator"
+            onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+            body={
+              <CCInspect
+                obj={io as CCGameObjectType}
+                onSubmit={(partial) => {
+                  dispatch({
+                    type: 'updateObject',
+                    partial: partial as GameObjectType,
+                  })
+                }}
+              />
+            }
+          />
+        )}
+        {io?.type === 'arithmetic-combinator' && (
+          <Dialog
+            title="Arithmetic Combinator"
+            onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+            body={
+              <ACInspect
+                obj={io as ACGameObjectType}
+                onSubmit={(partial) => {
+                  dispatch({
+                    type: 'updateObject',
+                    partial: partial,
+                  })
+                }}
+              />
+            }
+          />
+        )}
+        {io?.type === 'decider-combinator' && (
+          <Dialog
+            title="Decider Combinator"
+            onClose={() => dispatch({ type: 'setState', path: 'game.inspectedObject', value: null })}
+            body={
+              <DCInspect
+                obj={io as DCGameObjectType}
+                onSubmit={(partial) => {
+                  dispatch({
+                    type: 'updateObject',
+                    partial: partial,
+                  })
+                }}
+              />
+            }
+          />
+        )}
+        {state.game.isToolbarOpen && (
+          <Dialog
+            title=""
+            onClose={() => dispatch({ type: 'setState', path: 'game.isToolbarOpen', value: false })}
+            body={<ToolbarDlg {...{ state, dispatch }} />}
+          />
+        )}
       </div>
     </KeyboardCapture>
   )
